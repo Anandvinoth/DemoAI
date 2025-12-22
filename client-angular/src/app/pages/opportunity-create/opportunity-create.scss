@@ -1,0 +1,93 @@
+.opp-page {
+  padding: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.opp-page h2 {
+  margin-bottom: 1rem;
+}
+
+.opp-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+section {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+section h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+}
+
+.field-row label {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.field-row input,
+.field-row select,
+.field-row textarea {
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+.field-with-voice {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.voice-btn {
+  border: none;
+  padding: 0 0.6rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1.1rem;
+}
+
+.check-row {
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.alerts {
+  margin-bottom: 1rem;
+}
+
+.alert {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.alert-error {
+  background: #ffe5e5;
+  border: 1px solid #ffb3b3;
+}
+
+.alert-success {
+  background: #e6ffe6;
+  border: 1px solid #b3ffb3;
+}
+
+.actions {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}

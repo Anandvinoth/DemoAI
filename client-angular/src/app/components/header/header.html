@@ -1,0 +1,45 @@
+<!-- Original, simple, working header layout -->
+<header>
+  <div class="logo" (click)="navigate('/store/c')" style="cursor:pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="#ff7a00" stroke-width="4"></circle>
+      <path d="M20 32h24M32 20v24" stroke="#ff7a00" stroke-width="4" stroke-linecap="round"></path>
+    </svg>
+    🛍️ EcomCRM
+  </div>
+
+  <div class="search-bar-header">
+    <input
+      #searchInput
+      type="text"
+      id="searchInput"
+      placeholder="Search products..."
+      (keyup.enter)="onSearchSubmit()"
+    />
+    <button (click)="onStart()" [disabled]="isListening()">🎙️</button>
+  </div>
+
+  <nav>
+    <a (click)="navigate('/store/c')">Products</a>
+    <a (click)="navigate('/orders')">Orders</a>
+    <a (click)="navigate('/invoices')">Invoices</a>
+    <a (click)="navigate('/claims')">Claims</a>
+    <a (click)="navigate('/reserve')">Reserve</a>
+    <a (click)="navigate('/rewards')">Rewards</a>
+    <!-- Opportunities Menu -->
+      <div class="menu-group">
+        <a (click)="navigate('/crm/opportunities')">Opportunities ▾</a>
+        <div class="submenu">
+          <a (click)="navigate('/crm/opportunities/create')">➕ Create Opportunity</a>
+          <a (click)="navigate('/crm/opportunities/list')">📄 View Opportunities</a>
+        </div>
+      </div>
+<!--    <a (click)="navigate('/crm/opportunities')">Opportunities</a>-->
+  </nav>
+
+  <div class="user-info">
+    <span>Logged in as <strong>John Doe</strong></span>
+    <button class="logout" (click)="navigate('/logout')">Logout</button>
+  </div>
+</header>
+

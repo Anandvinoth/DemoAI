@@ -1,0 +1,353 @@
+<div class="opp-page">
+  <h2>New Opportunity</h2>
+
+  <div class="alerts">
+    <div *ngIf="error()" class="alert alert-error">{{ error() }}</div>
+    <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="opp-form">
+
+    <!-- BASIC INFO -->
+    <section>
+      <h3>Basic Information</h3>
+
+      <div class="field-row">
+        <label>Opportunity Name *</label>
+        <div class="field-with-voice">
+          <input type="text" formControlName="opportunity_name" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Account ID *</label>
+        <div class="field-with-voice">
+          <input type="text" formControlName="account_id" />
+<!--
+          <button type="button"
+                  class="voice-btn"
+                  (click)="startVoiceForField('account_id')">
+            🎤
+          </button>
+-->
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Primary Contact ID</label>
+        <div class="field-with-voice">
+          <input type="text" formControlName="primary_contact_id" />
+<!--
+          <button type="button"
+                  class="voice-btn"
+                  (click)="startVoiceForField('primary_contact_id')">
+            🎤
+          </button>
+-->
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Owner ID</label>
+        <div class="field-with-voice">
+          <input type="text" formControlName="owner_id" />
+<!--
+          <button type="button"
+                  class="voice-btn"
+                  (click)="startVoiceForField('owner_id')">
+            🎤
+          </button>
+-->
+        </div>
+      </div>
+    </section>
+
+    <!-- STATUS / STAGE -->
+    <section>
+      <h3>Stage & Status</h3>
+
+      <div class="field-row">
+        <label>Stage *</label>
+        <select formControlName="stage">
+          <ng-container *ngIf="metadata(); else stageFallback">
+            <option *ngFor="let s of metadata()!.stage" [value]="s">{{ s }}</option>
+          </ng-container>
+          <ng-template #stageFallback>
+            <option value="Prospecting">Prospecting</option>
+            <option value="Qualification">Qualification</option>
+            <option value="Proposal/Price Quote">Proposal/Price Quote</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Status *</label>
+        <select formControlName="status">
+          <ng-container *ngIf="metadata(); else statusFallback">
+            <option *ngFor="let s of metadata()!.status" [value]="s">{{ s }}</option>
+          </ng-container>
+          <ng-template #statusFallback>
+            <option value="Open">Open</option>
+            <option value="Working">Working</option>
+            <option value="Closed">Closed</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row check-row">
+        <label>
+          <input type="checkbox" formControlName="is_closed" />
+          Closed
+        </label>
+        <label>
+          <input type="checkbox" formControlName="is_won" />
+          Won
+        </label>
+      </div>
+    </section>
+
+    <!-- MONEY -->
+    <section>
+      <h3>Amounts</h3>
+
+      <div class="field-row">
+        <label>Amount</label>
+        <div class="field-with-voice">
+          <input type="number" formControlName="amount" />
+<!--
+          <button type="button"
+                  class="voice-btn"
+                  (click)="startVoiceForField('amount')">
+            🎤
+          </button>
+-->
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Currency</label>
+        <select formControlName="currency">
+          <ng-container *ngIf="metadata(); else currencyFallback">
+            <option *ngFor="let c of metadata()!.currency" [value]="c">{{ c }}</option>
+          </ng-container>
+          <ng-template #currencyFallback>
+            <option value="USD">USD</option>
+            <option value="CAD">CAD</option>
+            <option value="EUR">EUR</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Probability (%)</label>
+        <div class="field-with-voice">
+          <input type="number" formControlName="probability" />
+<!--
+          <button type="button"
+                  class="voice-btn"
+                  (click)="startVoiceForField('probability')">
+            🎤
+          </button>
+-->
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Expected Revenue</label>
+        <div class="field-with-voice">
+          <input type="number" formControlName="expected_revenue" />
+<!--
+          <button type="button"
+                  class="voice-btn"
+                  (click)="startVoiceForField('expected_revenue')">
+            🎤
+          </button>
+-->
+        </div>
+      </div>
+    </section>
+
+    <!-- DATES -->
+    <section>
+      <h3>Dates</h3>
+
+      <div class="field-row">
+        <label>Expected Close Date</label>
+        <input type="date" formControlName="expected_close_date" />
+      </div>
+
+      <div class="field-row">
+        <label>Close Date</label>
+        <input type="date" formControlName="close_date" />
+      </div>
+
+      <div class="field-row">
+        <label>Last Activity Date</label>
+        <input type="date" formControlName="last_activity_date" />
+      </div>
+
+      <div class="field-row">
+        <label>Last Contacted Date</label>
+        <input type="date" formControlName="last_contacted_date" />
+      </div>
+
+      <div class="field-row">
+        <label>Next Activity Date</label>
+        <input type="date" formControlName="next_activity_date" />
+      </div>
+    </section>
+
+    <!-- PIPELINE / TYPE -->
+    <section>
+      <h3>Pipeline & Type</h3>
+
+      <div class="field-row">
+        <label>Forecast Category</label>
+        <select formControlName="forecast_category">
+          <ng-container *ngIf="metadata(); else forecastFallback">
+            <option *ngFor="let f of metadata()!.forecast_category" [value]="f">{{ f }}</option>
+          </ng-container>
+          <ng-template #forecastFallback>
+            <option value="Pipeline">Pipeline</option>
+            <option value="Best Case">Best Case</option>
+            <option value="Commit">Commit</option>
+            <option value="Closed">Closed</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Lead Source</label>
+        <select formControlName="lead_source">
+          <ng-container *ngIf="metadata(); else leadFallback">
+            <option *ngFor="let l of metadata()!.lead_source" [value]="l">{{ l }}</option>
+          </ng-container>
+          <ng-template #leadFallback>
+            <option value="Inbound">Inbound</option>
+            <option value="Outbound">Outbound</option>
+            <option value="Partner">Partner</option>
+            <option value="Website">Website</option>
+            <option value="Referral">Referral</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Priority</label>
+        <select formControlName="priority">
+          <ng-container *ngIf="metadata(); else priorityFallback">
+            <option *ngFor="let p of metadata()!.priority" [value]="p">{{ p }}</option>
+          </ng-container>
+          <ng-template #priorityFallback>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Deal Type</label>
+        <select formControlName="deal_type">
+          <ng-container *ngIf="metadata(); else dealFallback">
+            <option *ngFor="let d of metadata()!.deal_type" [value]="d">{{ d }}</option>
+          </ng-container>
+          <ng-template #dealFallback>
+            <option value="New Business">New Business</option>
+            <option value="Existing Business">Existing Business</option>
+            <option value="Renewal">Renewal</option>
+            <option value="Upsell">Upsell</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Pipeline</label>
+        <select formControlName="pipeline_id">
+          <ng-container *ngIf="metadata(); else pipelineFallback">
+            <option *ngFor="let p of metadata()!.pipeline_id" [value]="p">{{ p }}</option>
+          </ng-container>
+          <ng-template #pipelineFallback>
+            <option value="PL-SaaS-2025">PL-SaaS-2025</option>
+            <option value="PL-Enterprise-2025">PL-Enterprise-2025</option>
+            <option value="PL-SMB-2025">PL-SMB-2025</option>
+          </ng-template>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label>Record Type</label>
+        <select formControlName="record_type">
+          <ng-container *ngIf="metadata(); else recordTypeFallback">
+            <option *ngFor="let r of metadata()!.record_type" [value]="r">{{ r }}</option>
+          </ng-container>
+          <ng-template #recordTypeFallback>
+            <option value="Sales Opportunity">Sales Opportunity</option>
+            <option value="Renewal">Renewal</option>
+            <option value="Upsell">Upsell</option>
+          </ng-template>
+        </select>
+      </div>
+    </section>
+
+    <!-- QUAL NOTES -->
+    <section>
+      <h3>Qualitative Details</h3>
+
+      <div class="field-row">
+        <label>Description</label>
+        <textarea formControlName="description" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Pain Points</label>
+        <textarea formControlName="pain_points" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Customer Needs</label>
+        <textarea formControlName="customer_needs" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Value Proposition</label>
+        <textarea formControlName="value_proposition" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Next Step</label>
+        <textarea formControlName="next_step" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Win Reason</label>
+        <textarea formControlName="win_reason" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Loss Reason</label>
+        <textarea formControlName="loss_reason" rows="2"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label>Tags (comma separated)</label>
+        <input type="text" formControlName="tags" />
+      </div>
+
+      <div class="field-row">
+        <label>Engagement Score</label>
+        <input type="number" formControlName="engagement_score" />
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Saving...' : 'Create Opportunity' }}
+      </button>
+
+      <button type="button" (click)="stopVoice()">
+        Stop Voice
+      </button>
+    </div>
+  </form>
+</div>

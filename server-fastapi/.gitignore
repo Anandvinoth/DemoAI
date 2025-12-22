@@ -1,0 +1,49 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+.venv/
+
+# Logs
+*.log
+*.json  # optional: if you don't want to track big JSON logs like phonetic_learning_log.json
+
+# Database / dumps
+*.sqlite3
+dump.rdb
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/
+docker-compose.override.yml
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# ML models & data
+model/
+intent_model/
+*.pkl
+*.bin
+*.pt
+*.h5
+*.onnx
+
+# Large logs / artifacts
+*.json
+phonetic_learning_log.json

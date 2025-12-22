@@ -1,0 +1,25 @@
+# Ignore Python caches and venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+
+# Ignore logs and local DBs
+*.log
+*.db
+
+# Ignore markdown/docs
+*.md
+
+# Ignore local configs
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Ignore git
+.git
+.gitignore
+
+# Allow requirements.txt explicitly
+!requirements.txt

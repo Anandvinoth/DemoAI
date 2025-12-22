@@ -1,0 +1,590 @@
+
+{
+  "query": "show orders for ACC1007"
+}
+{
+  "input": "show orders for ACC1007",
+  "intent": "view_orders",
+  "filters": {},
+  "speech": "Showing 2 orders for account ACC1007.",
+  "numFound": 2,
+  "orders": [
+    {
+
+{
+  "query": "get me all orders"
+}
+{
+  "input": "get me all orders",
+  "intent": "view_all_orders",
+  "filters": {},
+  "speech": "Showing 20 orders for all accounts.",
+  "numFound": 101,
+  "orders": [
+    {
+
+{
+  "query": "filter by currency USD",
+  "filters": { "currency": ["USD"] },
+  "superUser": true
+}
+
+
+  "input": "filter by currency CAD",
+  "intent": "filter_orders",
+  "filters": {
+    "currency": [
+      "CAD"
+    ]
+  },
+  "speech": "Showing 20 orders for all accounts filtered by currency=CAD.",
+  "numFound": 50,
+  "orders": [
+    {
+    
+    
+   http://localhost:8000/api/orders/voice 
+    
+    {
+    "input": "filter by currency usd",
+    "normalized": "filter by currency usd",
+    "intent": "search_by_material",
+    "confidence": 0.3003852069377899,
+    "entities": [
+        "search_text:filter by currency usd"
+    ],
+    "solr_query": "*:*",
+    "numFound": 20,
+    "products": [
+        {
+            "id": "1002",
+            "name": "Hydraulic Press",
+            "category": "Workshop Tools",
+            "brand": "Hitachi",
+            "price": 1599,
+            "material": "Iron",
+            "color": "Gray",
+            "weight": "80kg",
+            "dimensions": "120x60x150cm",
+            "description": "High-capacity hydraulic press machine",
+            "image_url": "https://allinton.com.sg/wp-content/uploads/2018/09/AQ00868-164-MOTOR-DRIVEN-HYDRAULIC-PRESS-100-TON-768x768.png",
+            "_version_": 1845886307884073000
+        },
+        {
+            "id": "1003",
+            "name": "Electric Saw",
+            "category": "Power Tools",
+            "brand": "DeWalt",
+            "price": 499.5,
+            "material": "Carbon Steel",
+            "color": "Yellow",
+            "weight": "3.1kg",
+            "dimensions": "40x20x10cm",
+            "description": "Electric saw for precision cutting",
+            "image_url": "https://www.contractorsdirect.com/cdn/shop/files/32749_01.webp?v=1719588137&width=675",
+            "_version_": 1845886307893510100
+        },
+        {
+            "id": "1004",
+            "name": "LED Panel Light",
+            "category": "Lighting",
+            "brand": "Philips",
+            "price": 99.99,
+            "material": "Aluminium",
+            "color": "White",
+            "weight": "1.2kg",
+            "dimensions": "60x60x5cm",
+            "description": "Energy-efficient industrial LED panel",
+            "image_url": "https://www.industrialcommerciallighting.com/media/catalog/product/cache/658b5bae439743a0c5caf366a5f0df99/l/p/lpd-x22-40-store.jpg",
+            "_version_": 1845886307894558700
+        },
+        {
+            "id": "1005",
+            "name": "Air Compressor",
+            "category": "Industrial",
+            "brand": "Ingersoll Rand",
+            "price": 850,
+            "material": "Alloy",
+            "color": "Silver",
+            "weight": "35kg",
+            "dimensions": "90x60x80cm",
+            "description": "Compact high-pressure air compressor",
+            "image_url": "https://media.tractorsupply.com/is/image/TractorSupplyCompany/1752842?wid=554&hei=554&qlt=90&fmt=jpeg&resMode=sharp2&op_usm=0.9",
+            "_version_": 1845886307895607300
+        },
+        {
+            "id": "1006",
+            "name": "Steel Workbench",
+            "category": "Furniture",
+            "brand": "Godrej",
+            "price": 420,
+            "material": "Steel",
+            "color": "Gray",
+            "weight": "50kg",
+            "dimensions": "180x75x90cm",
+            "description": "Industrial steel workbench for workshops",
+            "image_url": "https://lewisandraby.co.uk/wp-content/uploads/square-2-640x640.jpg",
+            "_version_": 1845886307895607300
+        },
+        {
+            "id": "1010",
+            "name": "Industrial Fan",
+            "category": "Equipment",
+            "brand": "Havells",
+            "price": 349,
+            "material": "Aluminium",
+            "color": "Black",
+            "weight": "7.5kg",
+            "dimensions": "70x30x60cm",
+            "description": "High-speed industrial cooling fan",
+            "image_url": "https://images.thdstatic.com/productImages/3f76a75a-bb68-4742-8713-f18899c11f81/svn/yellow-adrinfly-industrial-fans-snph039in086-64_600.jpg",
+            "_version_": 1845886307896656000
+        },
+        {
+            "id": "1011",
+            "name": "Angle Grinder",
+            "category": "Power Tools",
+            "brand": "Makita",
+            "price": 189,
+            "material": "Steel",
+            "color": "Teal",
+            "weight": "2.2kg",
+            "dimensions": "30x12x10cm",
+            "description": "Compact angle grinder for cutting and grinding",
+            "image_url": "https://m.media-amazon.com/images/I/61-KVEAyJLL._AC_SX679_.jpg",
+            "_version_": 1845886307896656000
+        },
+        {
+            "id": "1015",
+            "name": "Industrial Vacuum Cleaner",
+            "category": "Equipment",
+            "brand": "Kärcher",
+            "price": 649.99,
+            "material": "Plastic/Steel",
+            "color": "Yellow/Black",
+            "weight": "14kg",
+            "dimensions": "55x40x70cm",
+            "description": "High-capacity wet and dry vacuum cleaner",
+            "image_url": "https://s1.kaercher-media.com/mam/99889120/mainproduct/91026/d1.jpg",
+            "_version_": 1845886307897704400
+        },
+        {
+            "id": "1017",
+            "name": "Workbench Lamp",
+            "category": "Lighting",
+            "brand": "GE",
+            "price": 49.99,
+            "material": "Aluminium",
+            "color": "Black",
+            "weight": "0.9kg",
+            "dimensions": "20x15x40cm",
+            "description": "Flexible LED lamp for industrial workbenches",
+            "image_url": "https://images.thdstatic.com/productImages/247eb1e5-888b-47b6-9392-2baab1026f84/svn/ryobi-jobsite-lighting-pcl667b-66_600.jpg",
+            "_version_": 1845886307897704400
+        },
+        {
+            "id": "1018",
+            "name": "Face Shield",
+            "category": "Safety Gear",
+            "brand": "MSA",
+            "price": 24.99,
+            "material": "Polycarbonate",
+            "color": "Clear/Black",
+            "weight": "0.4kg",
+            "dimensions": "30x25x20cm",
+            "description": "Full-face protection shield for industrial use",
+            "image_url": "https://busse-hospital-dosposables.s3.amazonaws.com/wp-content/uploads/20210604103055/395.jpg",
+            "_version_": 1845886307898753000
+        },
+        {
+            "id": "1001",
+            "name": "Industrial Drill",
+            "category": "Power Tools",
+            "brand": "Bosch",
+            "price": 229.99,
+            "material": "Steel",
+            "color": "Blue",
+            "weight": "2.5kg",
+            "dimensions": "25x10x8cm",
+            "description": "Heavy-duty drill for concrete and steel",
+            "image_url": "https://m.media-amazon.com/images/I/61FccnBarvL._UF894%2C1000_QL80_.jpg",
+            "_version_": 1845886307827449900
+        },
+        {
+            "id": "1007",
+            "name": "Safety Helmet",
+            "category": "Safety Gear",
+            "brand": "3M",
+            "price": 39.99,
+            "material": "ABS Plastic",
+            "color": "Yellow",
+            "weight": "0.5kg",
+            "dimensions": "25x20x15cm",
+            "description": "Industrial safety helmet with adjustable strap",
+            "image_url": "https://mobileimages.lowes.com/productimages/8bfa80bf-5a64-4748-8f50-66f5c753301f/70842593.jpeg?size=pdhism",
+            "_version_": 1845886307852615700
+        },
+        {
+            "id": "1008",
+            "name": "Welding Machine",
+            "category": "Power Tools",
+            "brand": "Lincoln Electric",
+            "price": 980,
+            "material": "Iron",
+            "color": "Red",
+            "weight": "25kg",
+            "dimensions": "65x45x30cm",
+            "description": "Advanced inverter welding machine",
+            "image_url": "https://m.media-amazon.com/images/I/61TgeQBkodL.jpg",
+            "_version_": 1845886307853664300
+        },
+        {
+            "id": "1009",
+            "name": "Heavy Duty Gloves",
+            "category": "Safety Gear",
+            "brand": "Honeywell",
+            "price": 19.99,
+            "material": "Leather",
+            "color": "Brown",
+            "weight": "0.3kg",
+            "dimensions": "30x15x3cm",
+            "description": "Heat and cut-resistant industrial gloves",
+            "image_url": "https://m.media-amazon.com/images/I/71B85WM8I4L._UF1000%2C1000_QL80_.jpg",
+            "_version_": 1845886307857858600
+        },
+        {
+            "id": "1012",
+            "name": "Workbench Vise",
+            "category": "Workshop Tools",
+            "brand": "Yost",
+            "price": 125.75,
+            "material": "Cast Iron",
+            "color": "Blue",
+            "weight": "7.8kg",
+            "dimensions": "25x20x15cm",
+            "description": "Heavy-duty bench vise with swivel base",
+            "image_url": "https://www.aloktools.com/wp-content/uploads/2019/04/Bench-Vise-do.jpg",
+            "_version_": 1845886307857858600
+        },
+        {
+            "id": "1013",
+            "name": "Chain Hoist",
+            "category": "Equipment",
+            "brand": "Kito",
+            "price": 289.99,
+            "material": "Steel",
+            "color": "Black/Orange",
+            "weight": "12kg",
+            "dimensions": "40x20x15cm",
+            "description": "Manual chain hoist with 2-ton capacity",
+            "image_url": "https://www.wiscolift.com/cdn/shop/products/gorbel-electric-chain-hoist-2-ton-full-view-hook-chain_1024x1024.jpg?v=1753968846",
+            "_version_": 1845886307858907100
+        },
+        {
+            "id": "1014",
+            "name": "Portable Generator",
+            "category": "Industrial",
+            "brand": "Honda",
+            "price": 1199,
+            "material": "Aluminium",
+            "color": "Red/Black",
+            "weight": "30kg",
+            "dimensions": "60x45x50cm",
+            "description": "Silent portable generator for job sites",
+            "image_url": "https://www.doggettequipment.com/getmedia/ba09e67e-7f2b-4ef5-a93d-3b35279568ed/PR-G2500I.JPG?width=900",
+            "_version_": 1845886307859955700
+        },
+        {
+            "id": "1016",
+            "name": "Pipe Cutter",
+            "category": "Workshop Tools",
+            "brand": "RIDGID",
+            "price": 85.5,
+            "material": "Steel",
+            "color": "Red",
+            "weight": "1.4kg",
+            "dimensions": "22x10x5cm",
+            "description": "Adjustable pipe cutter for metal and PVC",
+            "image_url": "https://storage.tameson.com/asset/Articles/general/pipe-cutter-main-image.jpg",
+            "_version_": 1845886307861004300
+        },
+        {
+            "id": "1019",
+            "name": "Plasma Cutter",
+            "category": "Power Tools",
+            "brand": "Miller",
+            "price": 1350,
+            "material": "Steel",
+            "color": "Blue",
+            "weight": "18kg",
+            "dimensions": "50x30x40cm",
+            "description": "Professional plasma cutter for metal fabrication",
+            "image_url": "https://images.thdstatic.com/productImages/a58550b1-85e2-4919-982f-ed429bb1fbae/svn/forney-plasma-cutters-251-31_600.jpg",
+            "_version_": 1845886307863101400
+        },
+        {
+            "id": "1020",
+            "name": "Tool Storage Cabinet",
+            "category": "Furniture",
+            "brand": "Stanley",
+            "price": 299,
+            "material": "Steel",
+            "color": "Black/Yellow",
+            "weight": "40kg",
+            "dimensions": "100x50x80cm",
+            "description": "Multi-drawer industrial tool storage solution",
+            "image_url": "https://www.hertoolbelt.com/wp-content/uploads/adthrive/2018/07/hertoolbelt-wall-control-tool-cabinet-480x720.jpg",
+            "_version_": 1845886307864150000
+        }
+    ],
+    "facets": {
+        "brand": [
+            {
+                "name": "3M",
+                "count": 1
+            },
+            {
+                "name": "Bosch",
+                "count": 1
+            },
+            {
+                "name": "DeWalt",
+                "count": 1
+            },
+            {
+                "name": "GE",
+                "count": 1
+            },
+            {
+                "name": "Godrej",
+                "count": 1
+            },
+            {
+                "name": "Havells",
+                "count": 1
+            },
+            {
+                "name": "Hitachi",
+                "count": 1
+            },
+            {
+                "name": "Honda",
+                "count": 1
+            },
+            {
+                "name": "Honeywell",
+                "count": 1
+            },
+            {
+                "name": "Ingersoll Rand",
+                "count": 1
+            },
+            {
+                "name": "Kito",
+                "count": 1
+            },
+            {
+                "name": "Kärcher",
+                "count": 1
+            },
+            {
+                "name": "Lincoln Electric",
+                "count": 1
+            },
+            {
+                "name": "MSA",
+                "count": 1
+            },
+            {
+                "name": "Makita",
+                "count": 1
+            },
+            {
+                "name": "Miller",
+                "count": 1
+            },
+            {
+                "name": "Philips",
+                "count": 1
+            },
+            {
+                "name": "RIDGID",
+                "count": 1
+            },
+            {
+                "name": "Stanley",
+                "count": 1
+            },
+            {
+                "name": "Yost",
+                "count": 1
+            }
+        ],
+        "material": [
+            {
+                "name": "Steel",
+                "count": 7
+            },
+            {
+                "name": "Aluminium",
+                "count": 4
+            },
+            {
+                "name": "Iron",
+                "count": 2
+            },
+            {
+                "name": "ABS Plastic",
+                "count": 1
+            },
+            {
+                "name": "Alloy",
+                "count": 1
+            },
+            {
+                "name": "Carbon Steel",
+                "count": 1
+            },
+            {
+                "name": "Cast Iron",
+                "count": 1
+            },
+            {
+                "name": "Leather",
+                "count": 1
+            },
+            {
+                "name": "Plastic/Steel",
+                "count": 1
+            },
+            {
+                "name": "Polycarbonate",
+                "count": 1
+            }
+        ],
+        "color": [
+            {
+                "name": "Blue",
+                "count": 3
+            },
+            {
+                "name": "Black",
+                "count": 2
+            },
+            {
+                "name": "Gray",
+                "count": 2
+            },
+            {
+                "name": "Red",
+                "count": 2
+            },
+            {
+                "name": "Yellow",
+                "count": 2
+            },
+            {
+                "name": "Black/Orange",
+                "count": 1
+            },
+            {
+                "name": "Black/Yellow",
+                "count": 1
+            },
+            {
+                "name": "Brown",
+                "count": 1
+            },
+            {
+                "name": "Clear/Black",
+                "count": 1
+            },
+            {
+                "name": "Red/Black",
+                "count": 1
+            },
+            {
+                "name": "Silver",
+                "count": 1
+            },
+            {
+                "name": "Teal",
+                "count": 1
+            },
+            {
+                "name": "White",
+                "count": 1
+            },
+            {
+                "name": "Yellow/Black",
+                "count": 1
+            }
+        ],
+        "category": [
+            {
+                "name": "Power Tools",
+                "count": 5
+            },
+            {
+                "name": "Equipment",
+                "count": 3
+            },
+            {
+                "name": "Safety Gear",
+                "count": 3
+            },
+            {
+                "name": "Workshop Tools",
+                "count": 3
+            },
+            {
+                "name": "Furniture",
+                "count": 2
+            },
+            {
+                "name": "Industrial",
+                "count": 2
+            },
+            {
+                "name": "Lighting",
+                "count": 2
+            }
+        ],
+        "price": [
+            {
+                "range": "[0 TO 25]",
+                "count": 2
+            },
+            {
+                "range": "[25 TO 50]",
+                "count": 2
+            },
+            {
+                "range": "[50 TO 100]",
+                "count": 2
+            },
+            {
+                "range": "[100 TO 250]",
+                "count": 3
+            },
+            {
+                "range": "[250 TO 500]",
+                "count": 5
+            },
+            {
+                "range": "[500 TO 1000]",
+                "count": 3
+            },
+            {
+                "range": "[1000 TO 999999]",
+                "count": 3
+            }
+        ]
+    },
+    "page": 1,
+    "pageSize": 20,
+    "totalPages": 1
+}
+
+
+

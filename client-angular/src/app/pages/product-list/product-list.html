@@ -1,0 +1,65 @@
+<!-- pages/product-list/product-list.html -->
+<div class="store-container">
+  <!-- LEFT: Facets Panel -->
+  <aside class="facets-panel">
+    <h3>Filters</h3>
+
+    <div *ngFor="let facet of facetsList()">
+      <h4>{{ facet.key | titlecase }}</h4>
+      <ul class="facet-list">
+        <li
+          *ngFor="let item of facet.values"
+          class="facet-item"
+          (click)="onFacetClick(facet.key, item)"
+          [class.active]="isSelectedActive(facet.key, item.name, item.range)"
+        >
+          <span class="facet-label">{{ item.name || item.range }}</span>
+          <span class="facet-count">({{ item.count }})</span>
+        </li>
+      </ul>
+    </div>
+
+    <!--<button class="reset-filters" (click)="clearAllFilters()">Reset Filters</button>-->
+  </aside>
+
+  <!-- RIGHT: Product Listing Area -->
+  <section class="product-list">
+    <!-- Selected Filter Chips -->
+    <div class="selected-chips" *ngIf="selectedKeys.length > 0">
+      <ng-container *ngFor="let key of selectedKeys">
+        <ng-container *ngFor="let v of selected()[key]">
+          <button class="chip" (click)="removeChip(key, v)">
+            {{ key | titlecase }}: {{ v }} ✕
+          </button>
+        </ng-container>
+      </ng-container>
+      <button class="chip clear" (click)="clearAllFilters()">Clear All</button>
+    </div>
+
+    <!-- Center modal chooser -->
+<!--
+    <app-product-chooser
+      [products]="products()"
+      [visible]="chooserVisible()"
+      (selected)="onChosenProduct($event)"
+      (closed)="onChooserClosed()"
+      (seeAll)="onChooserSeeAll()">
+    </app-product-chooser>
+-->
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <div *ngFor="let product of products(); trackBy: trackById"
+           class="product-card"
+           (click)="openProduct(product)">
+        <img [src]="product.image_url || 'https://via.placeholder.com/150'" [alt]="product.name" />
+        <div class="card-content">
+          <span class="card-category">{{ product.category }}</span>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          <div class="price">$ {{ product.price }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

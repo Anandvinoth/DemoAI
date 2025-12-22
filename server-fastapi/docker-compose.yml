@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      - SOLR_COLLECTION=products
+      - SOLR_HOST=host.docker.internal        # reach Solr on your host
+      - SOLR_USER=solr
+      - SOLR_PASS=SolrRocks
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # required for Linux Docker (host.docker.internal lets your container reach Solr running on your host (localhost:8983).)
+    networks:
+      - default

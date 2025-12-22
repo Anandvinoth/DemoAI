@@ -1,0 +1,147 @@
+/* Back to the stable CSS that played nicely with your page */
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 🔹 Logo area */
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ff7a00;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.logo svg {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+/* 🔹 Search bar + mic */
+.search-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 350px;
+  margin: 0 30px;
+}
+
+.search-bar-header input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+.search-bar-header button {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-bar-header button:hover {
+  background-color: #0056b3;
+}
+
+/* 🔹 Navigation links */
+nav {
+  display: flex;
+  gap: 16px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: #ff7a00;
+}
+
+/* 🔹 User info and logout */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.logout {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout:hover {
+  background-color: #b02a37;
+}
+/* Submenu wrapper */
+.menu-group {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-group > a {
+  cursor: pointer;
+}
+
+/* Submenu panel */
+.submenu {
+  display: none;
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  min-width: 180px;
+  padding: 8px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+
+/* submenu items */
+.submenu a {
+  display: block;
+  padding: 8px 16px;
+  color: #333;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.submenu a:hover {
+  background: #f5f5f5;
+}
+
+/* Show on hover */
+.menu-group:hover .submenu {
+  display: block;
+}
+
+
+

@@ -1,0 +1,35 @@
+<!-- src/app/pages/product-details/product-details.html -->
+<div class="store-container">
+  <!-- LEFT SIDE EMPTY/OPTIONAL (you can later reuse facets if you want) -->
+  <aside class="facets-panel"></aside>
+
+  <!-- RIGHT: Centered product detail -->
+  <section class="product-list">
+    <div *ngIf="product() as p" class="product-detail-wrapper">
+      <div class="product-card detail-card">
+        <img
+          [src]="p.image_url || 'https://via.placeholder.com/300'"
+          [alt]="p.name"
+        />
+        <div class="card-content">
+          <span class="card-category">{{ p.category }}</span>
+          <h1>{{ p.name }}</h1>
+
+          <div class="detail-meta">
+            <div><strong>Brand:</strong> {{ p.brand }}</div>
+            <div><strong>Material:</strong> {{ p.material }}</div>
+            <div><strong>Color:</strong> {{ p.color }}</div>
+            <div><strong>Dimensions:</strong> {{ p.dimensions }}</div>
+            <div><strong>Weight:</strong> {{ p.weight }}</div>
+          </div>
+
+          <p class="detail-description">
+            {{ p.description }}
+          </p>
+
+          <div class="price">$ {{ p.price }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

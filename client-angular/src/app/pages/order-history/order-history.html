@@ -1,0 +1,105 @@
+<!-- src/app/pages/order-history/order-history.html -->
+<div class="order-history-layout">
+  <!-- 🧭 Left Panel - Facets -->
+  <aside class="sidebar">
+    <h3>Filters</h3>
+    <button class="reset-filters" (click)="clearAllFilters()" *ngIf="hasSelectedFilters()">
+      Reset Filters
+    </button>
+
+    <div *ngFor="let facetKey of facetsArray" class="filter-section">
+      <h4>{{ facetKey.key | titlecase }}</h4>
+      <div
+        class="filter-option"
+        *ngFor="let bucket of facetKey.value"
+      >
+        <input
+          type="checkbox"
+          [id]="facetKey.key + '_' + bucket.name"
+          [checked]="isSelected(facetKey.key, bucket.name)"
+          (change)="toggleFacet(facetKey.key, bucket)"
+        />
+        <label [for]="facetKey.key + '_' + bucket.name">
+          {{ bucket.name }}
+          <span class="count">({{ bucket.count }})</span>
+        </label>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 📦 Right Panel - Orders List -->
+  <section class="orders-section">
+    <h2>📦 Order History</h2>
+
+    <div *ngIf="loading()">Loading orders...</div>
+    <div *ngIf="error()">{{ error() }}</div>
+
+    <div *ngIf="!loading() && orders().length === 0">
+      <p>No orders found.</p>
+    </div>
+
+    <table *ngIf="orders().length > 0" class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Account ID</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Warehouse</th>
+          <th>Total</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let o of orders(); trackBy: trackByOrderId">
+          <tr (click)="toggleExpand(o)" class="order-row">
+            <td>{{ o.order_id }}</td>
+            <td>{{ o.account_id }}</td>
+            <td>{{ o.status }}</td>
+            <td>{{ o.payment_status }}</td>
+            <td>{{ o.warehouse_status }}</td>
+            <td>{{ o.currency }} {{ o.total_amount | number:'1.2-2' }}</td>
+            <td>{{ o.order_date | date:'shortDate' }}</td>
+          </tr>
+
+          <tr *ngIf="o.expanded" class="order-details">
+            <td colspan="7">
+              <div class="items">
+                <h4>Items</h4>
+                <ul>
+                  <li *ngFor="let item of o.items">
+                    <strong>{{ item.product_name }}</strong> ({{ item.brand }})
+                    — Qty: {{ item.quantity }} × {{ item.unit_price | number:'1.2-2' }}
+                    = <strong>{{ item.total_price | number:'1.2-2' }}</strong>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="products">
+                <h4>Products</h4>
+                <div class="product-list">
+                  <div class="product-card" *ngFor="let p of o.product_details">
+                    <img [src]="p.image_url" alt="{{ p.name }}" />
+                    <div>
+                      <p><strong>{{ p.name }}</strong></p>
+                      <p>{{ p.brand }} • {{ p.material }}</p>
+                      <p>{{ p.color }}</p>
+                      <p>{{ p.price | currency }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <!-- 🧭 Pagination Controls -->
+    <div class="pagination" *ngIf="totalPages() > 1">
+      <button (click)="prevPage()" [disabled]="page() === 1">⬅ Prev</button>
+      <span>Page {{ page() }} of {{ totalPages() }}</span>
+      <button (click)="nextPage()" [disabled]="page() === totalPages()">Next ➡</button>
+    </div>
+  </section>
+</div>

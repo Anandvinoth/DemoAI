@@ -1,0 +1,35 @@
+# Node / Angular
+node_modules/
+dist/
+.angular/
+out-tsc/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+
+# ML / Data
+model/
+intent_model/
+*.pkl
+*.bin
+*.pt
+*.h5
+*.onnx
+*.json
+*.log
+dump.rdb
+
+# Archives
+*.zip
+*.pptx
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+

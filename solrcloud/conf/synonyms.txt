@@ -1,0 +1,10 @@
+# Common search synonyms
+show, list, get, fetch, find, display, reveal, browse, search
+product, item, goods, stuff, things
+under, below, less than
+above, over, greater than
+brand, manufacturer, make
+price, cost, amount, value
+material, composition, fabric, substance
+color, colour, shade, tone, hue
+weight, mass, heaviness

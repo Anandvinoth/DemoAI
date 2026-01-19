@@ -38,8 +38,8 @@ export class OrderTtsService {
       this.mic.stopListeningDuringTTS();
     });
 
-    document.addEventListener('tts-ended', () => {
-      this.mic.resumeListeningAfterTTS(600); // resume mic after short delay
-    });
+//    document.addEventListener('tts-ended', () => {
+//      this.mic.resumeListeningAfterTTS(600); // resume mic after short delay
+//    });
   }
 }

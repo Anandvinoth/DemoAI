@@ -16,12 +16,12 @@
       placeholder="Search products..."
       (keyup.enter)="onSearchSubmit()"
     />
-    <button (click)="onStart()" [disabled]="isListening()">🎙️</button>
+    <button (click)="onStart()" [disabled]="!canUseHeaderMic()">🎙️</button>
   </div>
 
   <nav>
     <a (click)="navigate('/store/c')">Products</a>
-    <a (click)="navigate('/orders')">Orders</a>
+    <a (click)="navigate('/orders')">Orders Logistics & Delivery</a> 
     <a (click)="navigate('/invoices')">Invoices</a>
     <a (click)="navigate('/claims')">Claims</a>
     <a (click)="navigate('/reserve')">Reserve</a>

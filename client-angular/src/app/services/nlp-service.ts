@@ -23,6 +23,7 @@ export class NlpApiService {
   }
 
   searchProducts(body: ProductSearchRequest): Observable<NlpResponse> {
+    console.log("################# searchProducts called in nlp-service ########################");
     return this.http.post<NlpResponse>(`${this.base}/api/products/query`, body);
   }
 

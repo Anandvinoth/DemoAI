@@ -8,6 +8,7 @@ import { Order, FacetBucket, OrderFacets } from '../../models/order.model';
 import { OrderVoiceBus } from '../../services/voice/order-voice-bus.service';
 import { OrderNlpResponse } from '../../models/order-nlp.response';
 import { VoiceContextService } from '../../services/voice/voice-context.service';
+import { VoiceService } from '../../services/voice-service';
 //import { TtsService } from '../../services/tts.service';
 
 @Component({
@@ -36,7 +37,8 @@ export class OrderHistory implements OnInit {
    constructor(
       private orderService: OrderService,
       private voiceBus: OrderVoiceBus,
-      private voiceCtx: VoiceContextService
+      private voiceCtx: VoiceContextService,
+      private voice: VoiceService 
     ) {
       console.log('🔥 OrderHistory CONSTRUCTOR');
       //this.voiceCtx.setMode('orders');
@@ -45,6 +47,18 @@ export class OrderHistory implements OnInit {
 
   // ─── Lifecycle ──────────────────────────────────────────────
   ngOnInit(): void {
+    
+    // ✅ Make Orders the owner of voice mode
+    this.voiceCtx.setMode('orders');
+
+    // ✅ Allow Header mic + route logs to "orders"
+//    this.voiceSession.setActive('orders');
+
+//    this.telemetry.emit('CTX_SET_ACTIVE', {
+//     ctx: 'orders',
+//     message: 'Orders page activated (mode + active context set)'
+//    });  
+       
     const isVoice = this.voiceCtx.isVoiceMode();
     console.log('🧭 OrderHistory → voice mode?', isVoice);
 
@@ -75,26 +89,30 @@ export class OrderHistory implements OnInit {
 
           // ✅ Direct payload from FastAPI (no extra Solr API call)
           if (res.orders && res.orders.length > 0) {
-            this.orders.set(res.orders);
-            this.facets.set(res.facets ?? {});
-            this.totalPages.set(res.totalPages ?? 1);
-            this.loading.set(false);
+              this.orders.set(res.orders);
+              this.facets.set(res.facets ?? {});
+              this.totalPages.set(res.totalPages ?? 1);
+              this.loading.set(false);
 
-            // ✅ Apply voice-provided filters
-            if (res.entities?.filters && Object.keys(res.entities?.filters).length > 0) {
-              console.log('🎯 Voice filters applied:', res.entities.filters);
-              this.selectedFilters.set(res.entities.filters);
-            }
+              if (res.entities?.filters && Object.keys(res.entities.filters).length > 0) {
+                this.selectedFilters.set(res.entities.filters);
+              }
 
-            // ✅ Optional: play voice response
-//            if (res.speech) {
-//              console.log('🗣️ Speech response:', res.speech);
-               //this.ttsService.speakWhenIdle(res.speech);
-//            }
+              // 🔁 FIX: resume mic AFTER TTS completes
+              document.addEventListener('tts-ended', () => {
+                console.log('🎤 Resuming mic for order follow-ups');
 
-            this.voiceCtx.disable();
-            return;
-          }
+                if (!this.voice.isListening$.value) {
+                  this.voice.startListening({
+                    language: 'en-US',
+                    continuous: true
+                  }).subscribe(); // 🔥 IMPORTANT: must subscribe
+                }
+              }, { once: true });
+
+              return;
+           }
+
 
           // 🔄 Otherwise interpret entities as navigation or filter intent
           const e = res.entities ?? {};

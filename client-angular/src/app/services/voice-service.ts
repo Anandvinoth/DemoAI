@@ -137,13 +137,13 @@ export class VoiceService {
       this.isListening$.next(false);
     }
 
-    resumeListeningAfterTTS(delayMs = 400) {
-      setTimeout(() => {
-        // only restart if we are currently not listening
-        if (!this.isListening$.value) {
-          console.log('🎤 Mic resumed after TTS');
-          this.startListening(); // restart recognition
-        }
-      }, delayMs);
-    }
+//    resumeListeningAfterTTS(delayMs = 400) {
+//      setTimeout(() => {
+//        // only restart if we are currently not listening
+//        if (!this.isListening$.value) {
+//          console.log('🎤 Mic resumed after TTS');
+//          this.startListening(); // restart recognition
+//        }
+//      }, delayMs);
+//    }
 }

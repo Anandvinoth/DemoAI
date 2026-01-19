@@ -1,231 +1,202 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+// src/app/pages/opportunity-create/opportunity-create.ts
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
-import { OpportunityService } from '../../services/opportunity.service';
-import { OpportunityMetadata, OpportunityCreateRequest } from '../../models/opportunity.model';
 import { VoiceService } from '../../services/voice-service';
-import { VoiceOpportunityService } from '../../services/voice/voice-opportunity.service';
+import { TtsService } from '../../services/tts.service';
+import { VoiceContextService } from '../../services/voice/voice-context.service';
+import { VoiceSessionService } from '../../services/voice/voice-session.service';
+import { VoiceTelemetryService } from '../../services/voice/voice-telemetry.service';
+import { createOpportunityCreateVoiceContext } from '../../services/voice/contexts/opportunity-create.voice.context';
+
+import {
+  OpportunityVoiceService,
+  OpportunityVoiceState
+} from './opportunity-voice.service';
+
+interface OpportunityMetadata {
+  stage: string[];
+  status: string[];
+  currency: string[];
+  forecast_category: string[];
+  lead_source: string[];
+  priority: string[];
+  deal_type: string[];
+  pipeline_id: string[];
+  record_type: string[];
+}
 
 @Component({
   selector: 'app-opportunity-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './opportunity-create.html',
-  styleUrls: ['./opportunity-create.scss']
+  styleUrls: ['./opportunity-create.scss'],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ]
 })
 export class OpportunityCreateComponent implements OnInit, OnDestroy {
 
-  form!: FormGroup;
+  // ----------------------------
+  // TEMPLATE STATE
+  // ----------------------------
+  form: FormGroup;
 
-  metadata = signal<OpportunityMetadata | null>(null);
-  loading = signal(false);
   error   = signal<string | null>(null);
   success = signal<string | null>(null);
+  loading = signal<boolean>(false);
 
-  // which field is currently being filled by voice
-  activeVoiceField = signal<string | null>(null);
-
-  private voiceSub?: Subscription;
-  private guidedSub?: Subscription;
+  // ----------------------------
+  // VOICE
+  // ----------------------------
+  private sub?: Subscription;
 
   constructor(
     private fb: FormBuilder,
-    private oppService: OpportunityService,
     private voice: VoiceService,
-    private voiceOpp: VoiceOpportunityService
-  ) {}
+    private tts: TtsService,
+    private oppVoice: OpportunityVoiceService,
+    private voiceCtx: VoiceContextService,
+    private voiceSession: VoiceSessionService,
+    private telemetry: VoiceTelemetryService
+  ) {
+    this.form = this.fb.group({
+      opportunity_name: [''],
+      account_id: [''],
+      primary_contact_id: [''],
+      owner_id: [''],
 
-  ngOnInit(): void {
-    this.buildForm();
-    this.loadMetadata();
+      stage: [''],
+      status: [''],
+      is_closed: [false],
+      is_won: [false],
 
- // 🔥 connect guided flow callback → update Angular form + submit signal
-    this.voiceOpp.onFieldCaptured = (field: string, value: string) => {
-      console.log("📝 Guided field captured:", field, value);
+      amount: [''],
+      currency: ['USD'],
+      probability: [''],
+      expected_revenue: [''],
 
-      if (field === '__submit__') {
-        // guided flow decided it's time to submit
-        this.onSubmit();
-        return;
-      }
+      expected_close_date: [''],
+      close_date: [''],
+      last_activity_date: [''],
+      last_contacted_date: [''],
+      next_activity_date: [''],
 
-      const ctrl = this.form.get(field);
-      if (ctrl) {
-        ctrl.setValue(value.trim());
-      }
+      forecast_category: [''],
+      lead_source: [''],
+      priority: [''],
+      deal_type: [''],
+      pipeline_id: [''],
+      record_type: [''],
 
-      this.activeVoiceField.set(null);
-    };
+      description: [''],
+      pain_points: [''],
+      customer_needs: [''],
+      value_proposition: [''],
+      next_step: [''],
+      win_reason: [''],
+      loss_reason: [''],
+      tags: [''],
+      engagement_score: ['']
+    });
   }
+
+  // ----------------------------
+  // LIFECYCLE
+  // ----------------------------
+  ngOnInit(): void {
+      const ctx = createOpportunityCreateVoiceContext({
+        telemetry: this.telemetry,
+        tts: this.tts,
+        form: this.form,
+        voiceSession: this.voiceSession   // ✅ PASS IT
+      });
+
+      this.voiceSession.register(ctx);
+      this.voiceSession.setActive('opportunity-create');
+    }
 
   ngOnDestroy(): void {
-    this.voiceSub?.unsubscribe();
-    this.guidedSub?.unsubscribe();
+      this.voiceSession.unregister('opportunity-create');
+      // optional: stop session listening when leaving page, or let products start manually
+      this.voiceSession.stop();
+    }
+
+
+  // ----------------------------
+  // VOICE FLOW
+  // ----------------------------
+  private promptCurrentField(): void {
+    const field = this.oppVoice.getCurrentField();
+    if (!field) return;
+
+    this.oppVoice.state = OpportunityVoiceState.PROMPTING;
+
     this.voice.stop();
+    this.tts.speak(field.prompt);
+    this.startListening();
   }
 
-  private buildForm(): void {
+  private startListening(): void {
+    this.oppVoice.state = OpportunityVoiceState.LISTENING;
 
-  const format = (d: Date): string => {
-    return d.toISOString().split("T")[0];
-  };
-
-  const today = new Date();
-  const todayStr = format(today);
-
-  // today + 30 days
-  const plus30 = new Date();
-  plus30.setDate(today.getDate() + 30);
-  const plus30Str = format(plus30);
-
-  this.form = this.fb.group({
-    opportunity_name: ['', Validators.required],
-    account_id: ['', Validators.required],
-    primary_contact_id: [''],
-    owner_id: [''],
-    stage: ['', Validators.required],
-    status: ['', Validators.required],
-    is_closed: [false],
-    is_won: [false],
-
-    // ✅ these must be YYYY-MM-DD STRINGS
-    expected_close_date: [plus30Str],
-    close_date: [plus30Str],
-    last_activity_date: [todayStr],
-    last_contacted_date: [todayStr],
-    next_activity_date: [todayStr],
-
-    amount: [],
-    currency: ['', Validators.required],
-    probability: [],
-    forecast_category: ['Pipeline'],
-    expected_revenue: [null],
-    lead_source: ['Inbound'],
-    campaign_id: [''],
-    priority: ['Medium'],
-    next_step: ['Follow up on 15/30/2025'],
-    deal_type: ['New Business'],
-    pipeline_id: ['PL-SaaS-2025'],
-
-    description: ['positive'],
-    pain_points: ['N/A'],
-    customer_needs: ['Fast delivery'],
-    value_proposition: ['80/20'],
-    win_reason: ['N/A'],
-    loss_reason: ['N/A'],
-    record_type: ['Sales Opportunity'],
-    tags: ['new proposal'],
-    engagement_score: [0]
-  });
-}
-
-
-  private loadMetadata(): void {
-    this.oppService.getMetadata().subscribe({
-      next: meta => {
-        console.log('📊 Opportunity metadata:', meta);
-        this.metadata.set(meta);
-      },
-      error: err => {
-        console.error('Failed to load metadata, using defaults.', err);
-        this.metadata.set(null);
-      }
-    });
-  }
-
-  // 🔊 Manual per-field dictation (kept as-is)
-  startVoiceForField(field: string): void {
-    this.activeVoiceField.set(field);
-    this.error.set(null);
-
-    this.voiceSub?.unsubscribe();
-
-    this.voiceSub = this.voice.startListening({
-      language: 'en-US',
-      continuous: false
-    })
-    .subscribe({
-      next: (text: string) => {
-        const trimmed = text.trim();
-        console.log(`🎤 Voice for ${field}:`, trimmed);
-
-        if (!trimmed) return;
-
-        const ctrl = this.form.get(field);
-        if (!ctrl) return;
-
-        if (['amount', 'probability', 'expected_revenue', 'engagement_score'].includes(field)) {
-          const num = Number(trimmed.replace(/[^0-9.-]/g, ''));
-          ctrl.setValue(isNaN(num) ? null : num);
-        } else if (['is_closed', 'is_won'].includes(field)) {
-          const lower = trimmed.toLowerCase();
-          ctrl.setValue(lower.includes('yes') || lower.includes('true'));
-        } else {
-          ctrl.setValue(trimmed);
+    this.sub?.unsubscribe();
+    this.sub = this.voice
+      .startListening({ language: 'en-US', continuous: false })
+      .subscribe({
+        next: text => {
+          console.log('🎙️ STT heard:', text);
+          this.handleFinal(text);
+        },
+        error: err => {
+          console.error('STT error', err);
+          this.promptCurrentField();
         }
+      });
+  }
 
-        this.voice.stop();
-        this.activeVoiceField.set(null);
-      },
-      error: err => {
-        console.error('Voice error:', err);
-        this.activeVoiceField.set(null);
-      }
-    });
+  private handleFinal(text: string): void {
+    this.voice.stop();
+
+    const result = this.oppVoice.interpretFinalResult(text);
+    if (!result.valid) {
+      this.promptCurrentField();
+      return;
+    }
+
+    const field = this.oppVoice.getCurrentField();
+    this.form.patchValue({ [field.id]: result.value });
+
+    this.tts.speak(`Set ${field.id.replace('_', ' ')} to ${result.value}`);
+
+    const hasNext = this.oppVoice.advance();
+    hasNext ? this.promptCurrentField() : this.finish();
+  }
+
+  private finish(): void {
+    this.tts.speak('Opportunity voice capture completed');
+    console.log('Voice data:', this.form.value);
+  }
+
+  // ----------------------------
+  // TEMPLATE HOOKS
+  // ----------------------------
+  metadata(): OpportunityMetadata | null {
+    return null;
+  }
+
+  onSubmit(): void {
+    this.loading.set(true);
+    console.log('Submitting opportunity:', this.form.value);
+    this.loading.set(false);
+    this.success.set('Opportunity created successfully');
   }
 
   stopVoice(): void {
     this.voice.stop();
-    this.activeVoiceField.set(null);
-    this.voiceSub?.unsubscribe();
-  }
-
-  // 🚀 Submit to FastAPI
-  onSubmit(): void {
-    console.log(" --------- onSubmit method called class OpportunityCreateComponent ---------")
-    this.error.set(null);
-    this.success.set(null);
-
-    if (this.form.invalid) {
-      this.error.set('Please fill all required fields.');
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const raw = this.form.value;
-
-    const normalizeDate = (v: any): string | null =>
-      v ? new Date(v).toISOString().slice(0, 10) : null;
-
-    const payload: OpportunityCreateRequest = {
-      ...raw,
-      expected_close_date: normalizeDate(raw.expected_close_date),
-      close_date: normalizeDate(raw.close_date),
-      last_activity_date: normalizeDate(raw.last_activity_date),
-      last_contacted_date: normalizeDate(raw.last_contacted_date),
-      next_activity_date: normalizeDate(raw.next_activity_date),
-      amount: raw.amount != null ? Number(raw.amount) : null,
-      probability: raw.probability != null ? Number(raw.probability) : null,
-      expected_revenue: raw.expected_revenue != null ? Number(raw.expected_revenue) : null,
-      engagement_score: raw.engagement_score != null ? Number(raw.engagement_score) : null
-    };
-
-    console.log('🚀 Submitting opportunity payload:', payload);
-
-    this.loading.set(true);
-    this.oppService.createOpportunity(payload).subscribe({
-      next: res => {
-        this.loading.set(false);
-        console.log('✅ Opportunity created:', res);
-        this.success.set('Opportunity created successfully.');
-      },
-      error: err => {
-        this.loading.set(false);
-        console.error('❌ Failed to create opportunity:', err);
-        this.error.set('Failed to create opportunity.');
-      }
-    });
+    this.tts.stop?.();
   }
 }

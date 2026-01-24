@@ -11,6 +11,9 @@ import { VoiceRouteBinderService } from './services/voice/voice-route-binder.ser
 import { NlpApiService } from './services/nlp-service';
 import { NlpBus } from './services/nlp-bus';
 import { createProductsVoiceContext } from './services/voice/contexts/products-voice.context';
+import { VoiceContextService } from './services/voice/voice-context.service';
+import { createOrdersVoiceContext } from './services/voice/contexts/orders-voice.context';
+
 
 @Component({
   selector: 'app-root',
@@ -28,26 +31,32 @@ export class AppComponent implements OnInit {
   private voiceRouteBinder: VoiceRouteBinderService,
   private nlpApi: NlpApiService,
   private bus: NlpBus,
-  private router: Router
+  private router: Router,
+  private voiceCtx: VoiceContextService
 ) {}
 
 
   ngOnInit(): void {
-  console.log('🎧 Initializing voice services...');
+      console.log('🎧 Initializing voice services...');
+      this.voiceOrder.init();
+      const productsCtx = createProductsVoiceContext({
+        nlpApi: this.nlpApi,
+        bus: this.bus,
+        router: this.router,
+        telemetry: this.voiceTelemetry,
+        voiceSession: this.voiceSession,
+        voiceCtx: this.voiceCtx
+      });
 
-  // 🔑 REGISTER PRODUCTS CONTEXT (ONCE)
-  this.voiceSession.register(
-    createProductsVoiceContext({
-      nlpApi: this.nlpApi,
-      bus: this.bus,
-      router: this.router,
-      telemetry: this.voiceTelemetry,
-      voiceSession: this.voiceSession
-    })
-  );
+      const ordersCtx = createOrdersVoiceContext({
+        telemetry: this.voiceTelemetry,
+        voiceSession: this.voiceSession,
+        voiceCtx: this.voiceCtx
+      });
 
-  // existing init
-  this.voiceOrder.init();
-}
+      this.voiceSession.register(productsCtx);
+      this.voiceSession.register(ordersCtx);
 
+      this.voiceSession.setActive('products');
+ }
 }

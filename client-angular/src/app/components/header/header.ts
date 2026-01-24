@@ -57,18 +57,34 @@ export class Header implements OnDestroy {
 
 
   constructor(
-    private voiceCtx: VoiceContextService,
-    private voice: VoiceService,
-    private nlpApi: NlpApiService,
-    private router: Router,
-    private voiceSession: VoiceSessionService,
-    private telemetry: VoiceTelemetryService,
-    //private voiceOpp: VoiceOpportunityService,
-    private bus: NlpBus,
-    private tts: TtsService
-  ) {
-    this.sub = this.voice.isListening$.subscribe(v => this.isListening.set(v));
-  }
+  private voiceCtx: VoiceContextService,
+  private voice: VoiceService,
+  private nlpApi: NlpApiService,
+  private router: Router,
+  private voiceSession: VoiceSessionService,
+  private telemetry: VoiceTelemetryService,
+  //private voiceOpp: VoiceOpportunityService,
+  private bus: NlpBus,
+  private tts: TtsService
+) {
+  // 🔊 mic on/off indicator
+  this.sub = this.voice.isListening$.subscribe(v =>
+    this.isListening.set(v)
+  );
+
+  // 🧭 GLOBAL VOICE NAVIGATION (independent of NLP)
+  this.voice.text$.subscribe(text => {
+    if (!text) return;
+
+    console.log('🧭 Global voice heard:', text);
+
+    const handled = this.handleGlobalNavigation(text);
+    if (handled) {
+      console.log('🛑 Global navigation handled');
+    }
+  });
+}
+
 
   // ---------------------------------------------------------
   // 🧠 GLOBAL JOURNEY DETECTOR
@@ -415,7 +431,7 @@ export class Header implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.voiceSession.unregister('products');
+    //this.voiceSession.unregister('products');
     //this.sub?.unsubscribe();
   }
 
@@ -426,4 +442,65 @@ export class Header implements OnDestroy {
       const ctx = this.voiceSession.getActiveContextId();
       return ctx === 'products' || ctx === 'orders';
   }
+
+  private handleGlobalNavigation(text: string): boolean {
+      const u = text.toLowerCase().trim();
+      
+      if (u === 'stop listening' || u === 'mute mic') {
+          this.voice.stop();
+          //his.voiceSession.forceStop();
+          return true;
+      }
+
+      // ---- PRODUCTS ----
+      if (
+        u === 'go to products' ||
+        u === 'show products' ||
+        u === 'open products'
+      ) {
+        this.voiceCtx.setMode('products');
+        this.router.navigate(['/store/c']);
+        //this.voice.stop();
+        return true;
+      }
+
+      // ---- ORDERS ----
+      if (
+        u === 'go to orders' ||
+        u === 'show orders' ||
+        u === 'open orders'
+      ) {
+        //this.voiceSession.unregister('products');  
+        this.voiceCtx.setMode('orders');
+        this.router.navigate(['/orders']);
+        //this.voice.stop();
+        return true;
+      }
+
+      // ---- OPPORTUNITY CREATE ----
+      if (
+        u === 'go to opportunity' ||
+        u === 'create opportunity' ||
+        u === 'new opportunity'
+      ) {
+        this.voiceCtx.setMode('opportunity');
+        this.router.navigate(['/crm/opportunities/create']);
+        this.voice.stop();
+        return true;
+      }
+
+      // ---- OPPORTUNITY LIST ----
+      if (
+        u === 'view opportunities' ||
+        u === 'show opportunities'
+      ) {
+        this.voiceCtx.setMode('opportunity');
+        this.router.navigate(['/crm/opportunities/list']);
+        this.voice.stop();
+        //this.voiceSession.forceStop();
+        return true;
+      }
+
+      return false;
+    }
 }

@@ -16,7 +16,7 @@ export class VoiceOrderService {
     private nlp: OrderNlpService,
     private bus: OrderVoiceBus,
     private voiceCtx: VoiceContextService
-  ) {}
+  ) {console.log('🔥 VoiceOrderService CONSTRUCTOR');}
 
   init() {
     console.log("init method called in VoiceOrderService!! ");

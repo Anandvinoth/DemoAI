@@ -6,37 +6,30 @@ export class TtsService {
   private synth = window.speechSynthesis;
 
   /** Speak immediately (cancels anything pending) */
-  speak(text: string, opts: { rate?: number; pitch?: number; lang?: string } = {}) {
-    if (!text) return;
+ speak(text: string, opts: any = {}) {
+      const utter = new SpeechSynthesisUtterance(text); // ✅ THIS WAS MISSING
 
-    // stop current speech first
-    this.stop();
+      utter.lang = opts.lang ?? 'en-US';
+      utter.rate = opts.rate ?? 1;
+      utter.pitch = opts.pitch ?? 1;
 
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = opts.lang ?? 'en-US';
-    utter.rate = opts.rate ?? 1;
-    utter.pitch = opts.pitch ?? 1;
+      document.dispatchEvent(
+        new CustomEvent('tts-started', { detail: { text } })
+      );
 
-    // best-effort pick an English voice
-    const voices = this.synth.getVoices();
-    const voice = voices.find(v => v.name.includes('Google US English')) ?? voices.find(v => v.lang.startsWith('en'));
-    if (voice) utter.voice = voice;
+      utter.onend = () => {
+        document.dispatchEvent(
+          new CustomEvent('tts-ended', { detail: { text } })
+        );
+      };
 
-    utter.onstart = () => {
-      document.dispatchEvent(new CustomEvent('tts-started'));
-      console.log('🔊 TTS started');
-    };
-    utter.onend = () => {
-      document.dispatchEvent(new CustomEvent('tts-ended'));
-      console.log('✅ TTS finished');
-    };
-    utter.onerror = e => {
-      console.error('❌ TTS error:', e.error);
-      document.dispatchEvent(new CustomEvent('tts-ended'));
-    };
+      utter.onerror = () => {
+        document.dispatchEvent(
+          new CustomEvent('tts-ended', { detail: { text } })
+        );
+      };
 
-    // small delay lets Chrome load voices
-    setTimeout(() => this.synth.speak(utter), 150);
+      speechSynthesis.speak(utter);
   }
 
   /** Wait until not speaking, then speak (used by your code) */

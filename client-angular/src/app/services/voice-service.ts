@@ -112,6 +112,16 @@ export class VoiceService {
     });
   }
 
+  /** 🔑 Explicit public bridge for session → legacy pipelines */
+  emitText(text: string): void {
+    this.textSubject.next(text);
+  }
+
+  /** 🔑 Legacy NLP bridge (Orders pipeline depends on this) */
+  emitRecognizedText(text: string): void {
+    this.textSubject.next(text);
+  }
+
   stop(): void {
     try { this.recognition?.stop(); } catch {}
     this.isListening$.next(false);

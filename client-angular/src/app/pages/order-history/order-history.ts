@@ -8,7 +8,8 @@ import { Order, FacetBucket, OrderFacets } from '../../models/order.model';
 import { OrderVoiceBus } from '../../services/voice/order-voice-bus.service';
 import { OrderNlpResponse } from '../../models/order-nlp.response';
 import { VoiceContextService } from '../../services/voice/voice-context.service';
-import { VoiceService } from '../../services/voice-service';
+//import { VoiceService } from '../../services/voice-service';
+import { VoiceSessionService } from '../../services/voice/voice-session.service';
 //import { TtsService } from '../../services/tts.service';
 
 @Component({
@@ -38,7 +39,8 @@ export class OrderHistory implements OnInit {
       private orderService: OrderService,
       private voiceBus: OrderVoiceBus,
       private voiceCtx: VoiceContextService,
-      private voice: VoiceService 
+      //private voice: VoiceService,
+      private voiceSession: VoiceSessionService
     ) {
       console.log('🔥 OrderHistory CONSTRUCTOR');
       //this.voiceCtx.setMode('orders');
@@ -47,29 +49,25 @@ export class OrderHistory implements OnInit {
 
   // ─── Lifecycle ──────────────────────────────────────────────
   ngOnInit(): void {
-    
-    // ✅ Make Orders the owner of voice mode
-    this.voiceCtx.setMode('orders');
+      const isVoice = this.voiceCtx.isVoiceMode();
+      console.log('🧭 OrderHistory → voice mode?', isVoice);
 
-    // ✅ Allow Header mic + route logs to "orders"
-//    this.voiceSession.setActive('orders');
+      if (!isVoice) {
+        console.log('🖱️ Manual mode → loading via /api/orders/history');
+        this.fetchOrdersForSuperUser();
+      } else {
+        console.log('🎤 Voice mode → starting mic for orders');
+        this.voiceSession.start({ language: 'en-US', continuous: true });
+        // 🔥 THIS WAS MISSING
+//        this.voice.startListening({
+//          language: 'en-US',
+//          continuous: true
+//        }).subscribe();
+      }
 
-//    this.telemetry.emit('CTX_SET_ACTIVE', {
-//     ctx: 'orders',
-//     message: 'Orders page activated (mode + active context set)'
-//    });  
-       
-    const isVoice = this.voiceCtx.isVoiceMode();
-    console.log('🧭 OrderHistory → voice mode?', isVoice);
-
-    if (!isVoice) {
-      console.log('🖱️ Manual mode → loading via /api/orders/history');
-      this.fetchOrdersForSuperUser();
-    } else {
-      console.log('🎤 Voice mode → waiting for NLP results, no API call');
-    }
-    this.listenToVoiceEvents();
+      this.listenToVoiceEvents();
   }
+
 
   /** ─── 🎧 Voice Event Listener ─────────────────────────────── */
   private listenToVoiceEvents(): void {
@@ -99,16 +97,16 @@ export class OrderHistory implements OnInit {
               }
 
               // 🔁 FIX: resume mic AFTER TTS completes
-              document.addEventListener('tts-ended', () => {
-                console.log('🎤 Resuming mic for order follow-ups');
-
-                if (!this.voice.isListening$.value) {
-                  this.voice.startListening({
-                    language: 'en-US',
-                    continuous: true
-                  }).subscribe(); // 🔥 IMPORTANT: must subscribe
-                }
-              }, { once: true });
+//              document.addEventListener('tts-ended', () => {
+//                console.log('🎤 Resuming mic for order follow-ups');
+//
+//                if (!this.voice.isListening$.value) {
+//                  this.voice.startListening({
+//                    language: 'en-US',
+//                    continuous: true
+//                  }).subscribe(); // 🔥 IMPORTANT: must subscribe
+//                }
+//              }, { once: true });
 
               return;
            }

@@ -10,6 +10,7 @@ import { VoiceContextService } from '../../services/voice/voice-context.service'
 import { VoiceSessionService } from '../../services/voice/voice-session.service';
 import { VoiceTelemetryService } from '../../services/voice/voice-telemetry.service';
 import { createOpportunityCreateVoiceContext } from '../../services/voice/contexts/opportunity-create.voice.context';
+import { OpportunityService } from '../../services/opportunity.service';
 
 import {
   OpportunityVoiceService,
@@ -52,7 +53,7 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
   // ----------------------------
   // VOICE
   // ----------------------------
-  private sub?: Subscription;
+  // private sub?: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -61,48 +62,53 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
     private oppVoice: OpportunityVoiceService,
     private voiceCtx: VoiceContextService,
     private voiceSession: VoiceSessionService,
-    private telemetry: VoiceTelemetryService
+    private telemetry: VoiceTelemetryService,
+    private opportunityService:OpportunityService
   ) {
-    this.form = this.fb.group({
-      opportunity_name: [''],
-      account_id: [''],
-      primary_contact_id: [''],
-      owner_id: [''],
+    const today = new Date().toISOString().slice(0, 10);
 
-      stage: [''],
-      status: [''],
-      is_closed: [false],
-      is_won: [false],
+this.form = this.fb.group({
+  opportunity_name: [''],
+  account_id: [''],
+  primary_contact_id: [''],
+  owner_id: [''],
 
-      amount: [''],
-      currency: ['USD'],
-      probability: [''],
-      expected_revenue: [''],
+  // defaults
+  stage: ['Prospecting'],
+  status: ['Open'],
+  is_closed: [false],
+  is_won: [false],
 
-      expected_close_date: [''],
-      close_date: [''],
-      last_activity_date: [''],
-      last_contacted_date: [''],
-      next_activity_date: [''],
+  amount: [0],
+  currency: ['USD'],
+  probability: [10],
+  expected_revenue: [0],
 
-      forecast_category: [''],
-      lead_source: [''],
-      priority: [''],
-      deal_type: [''],
-      pipeline_id: [''],
-      record_type: [''],
+  expected_close_date: [today],
+  close_date: [today],
+  last_activity_date: [today],
+  last_contacted_date: [today],
+  next_activity_date: [today],
 
-      description: [''],
-      pain_points: [''],
-      customer_needs: [''],
-      value_proposition: [''],
-      next_step: [''],
-      win_reason: [''],
-      loss_reason: [''],
-      tags: [''],
-      engagement_score: ['']
-    });
-  }
+  forecast_category: ['Pipeline'],
+  lead_source: ['Voice'],
+  priority: ['Medium'],
+  deal_type: ['New Business'],
+  pipeline_id: ['PL-SaaS-2025'],
+  record_type: ['Sales Opportunity'],
+
+  campaign_id: ['N/A'],
+  description: ['No description provided'],
+  pain_points: ['Not identified yet'],
+  customer_needs: ['To be determined'],
+  value_proposition: ['Not defined'],
+  next_step: ['Follow up required'],
+  win_reason: ['Pending outcome'],
+  loss_reason: ['Pending outcome'],
+  tags: ['voice'],
+  engagement_score: [0]
+ });
+}
 
   // ----------------------------
   // LIFECYCLE
@@ -112,7 +118,8 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
         telemetry: this.telemetry,
         tts: this.tts,
         form: this.form,
-        voiceSession: this.voiceSession   // ✅ PASS IT
+        voiceSession: this.voiceSession,   // ✅ PASS IT
+        opportunityService:this.opportunityService
       });
 
       this.voiceSession.register(ctx);
@@ -129,57 +136,57 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
   // ----------------------------
   // VOICE FLOW
   // ----------------------------
-  private promptCurrentField(): void {
-    const field = this.oppVoice.getCurrentField();
-    if (!field) return;
+  // private promptCurrentField(): void {
+  //   const field = this.oppVoice.getCurrentField();
+  //   if (!field) return;
 
-    this.oppVoice.state = OpportunityVoiceState.PROMPTING;
+  //   this.oppVoice.state = OpportunityVoiceState.PROMPTING;
 
-    this.voice.stop();
-    this.tts.speak(field.prompt);
-    this.startListening();
-  }
+  //   this.voice.stop();
+  //   this.tts.speak(field.prompt);
+  //   this.startListening();
+  // }
 
-  private startListening(): void {
-    this.oppVoice.state = OpportunityVoiceState.LISTENING;
+  // private startListening(): void {
+  //   this.oppVoice.state = OpportunityVoiceState.LISTENING;
 
-    this.sub?.unsubscribe();
-    this.sub = this.voice
-      .startListening({ language: 'en-US', continuous: false })
-      .subscribe({
-        next: text => {
-          console.log('🎙️ STT heard:', text);
-          this.handleFinal(text);
-        },
-        error: err => {
-          console.error('STT error', err);
-          this.promptCurrentField();
-        }
-      });
-  }
+  //   this.sub?.unsubscribe();
+  //   this.sub = this.voice
+  //     .startListening({ language: 'en-US', continuous: false })
+  //     .subscribe({
+  //       next: text => {
+  //         console.log('🎙️ STT heard:', text);
+  //         this.handleFinal(text);
+  //       },
+  //       error: err => {
+  //         console.error('STT error', err);
+  //         this.promptCurrentField();
+  //       }
+  //     });
+  // }
 
-  private handleFinal(text: string): void {
-    this.voice.stop();
+  // private handleFinal(text: string): void {
+  //   this.voice.stop();
 
-    const result = this.oppVoice.interpretFinalResult(text);
-    if (!result.valid) {
-      this.promptCurrentField();
-      return;
-    }
+  //   const result = this.oppVoice.interpretFinalResult(text);
+  //   if (!result.valid) {
+  //     this.promptCurrentField();
+  //     return;
+  //   }
 
-    const field = this.oppVoice.getCurrentField();
-    this.form.patchValue({ [field.id]: result.value });
+  //   const field = this.oppVoice.getCurrentField();
+  //   this.form.patchValue({ [field.id]: result.value });
 
-    this.tts.speak(`Set ${field.id.replace('_', ' ')} to ${result.value}`);
+  //   this.tts.speak(`Set ${field.id.replace('_', ' ')} to ${result.value}`);
 
-    const hasNext = this.oppVoice.advance();
-    hasNext ? this.promptCurrentField() : this.finish();
-  }
+  //   const hasNext = this.oppVoice.advance();
+  //   hasNext ? this.promptCurrentField() : this.finish();
+  // }
 
-  private finish(): void {
-    this.tts.speak('Opportunity voice capture completed');
-    console.log('Voice data:', this.form.value);
-  }
+  // private finish(): void {
+  //   this.tts.speak('Opportunity voice capture completed');
+  //   console.log('Voice data:', this.form.value);
+  // }
 
   // ----------------------------
   // TEMPLATE HOOKS

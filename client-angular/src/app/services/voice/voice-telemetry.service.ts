@@ -28,7 +28,8 @@ export type VoiceEventType =
   | 'STT_RETRY'
   // business / workflow telemetry
   | 'FORM_DEFAULTS'
-  | 'FORM_SUBMIT';
+  | 'FORM_SUBMIT'
+  | 'FLOW_START';
 
 
 export interface VoiceTelemetryEvent {

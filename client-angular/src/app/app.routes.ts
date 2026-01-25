@@ -10,7 +10,7 @@ export const routes: Routes = [
     {path: 'store/c', component: ProductList},
     {path: 'product-detail', component:ProductDetail},
     {path: 'orders', component: OrderHistory},
-    {path: 'crm/opportunities',component: OpportunityCreateComponent},
+    // {path: 'crm/opportunities',component: OpportunityCreateComponent},
     {path: 'crm/opportunities/create',component: OpportunityCreateComponent},
     {path: 'crm/opportunities/list',component: OpportunityListComponent}
 ];

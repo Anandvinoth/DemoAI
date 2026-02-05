@@ -1,4 +1,6 @@
 # routes/product_voice_v2.py
+import os
+
 from fastapi import APIRouter, Body, HTTPException
 from nlu_engine import NLU
 from services.product_service import search_products_natural
@@ -25,7 +27,10 @@ async def product_voice(payload: dict = Body(...)):
     result = _nlu.infer(text)
     intent = result["intent"]
     entities = result["entities"]
-    print(f"[INTENT MODEL] → {intent}  Entities: {entities}")
+    # print(f"[INTENT MODEL - file product_voice_v2.py] → {intent}
+    # Dynamically get file name
+    file_name = os.path.basename(__file__)
+    print(f"[INTENT MODEL - file {file_name}] → Intent: {intent} | Entities: {entities}")
 
     # --- Detect "show me all products" or similar ---
     lower = text.lower().strip()

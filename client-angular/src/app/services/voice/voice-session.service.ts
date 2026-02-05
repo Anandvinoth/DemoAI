@@ -1,6 +1,6 @@
 // src/app/services/voice/voice-session.service.ts
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { VoiceService, ListenOptions } from '../voice-service';
 import { TtsService } from '../tts.service';
@@ -42,21 +42,34 @@ export class VoiceSessionService implements OnDestroy {
   private lastTtsText = '';
   private lastTtsEndedAt = 0;
   private ttsActive = false;
-
+  readonly isListening$: Observable<boolean>;
+  private ttsSpeaking = false;
+ 
   constructor(
     private zone: NgZone,
     private voice: VoiceService,
     private tts: TtsService,
     private telemetry: VoiceTelemetryService
   ) {
-    document.addEventListener('tts-started', this.onTtsStartedBound);
-    document.addEventListener('tts-ended', this.onTtsEndedBound);
+    this.isListening$ = this.voice.isListening$;
+    // document.addEventListener('tts-started', this.onTtsStartedBound);
+    // document.addEventListener('tts-ended', this.onTtsEndedBound);
+
+    document.addEventListener('tts-started', () => {
+      this.ttsSpeaking = true;
+      this.stop(); // 🔇 HARD STOP MIC
+  });
+
+    document.addEventListener('tts-ended', () => {
+      this.ttsSpeaking = false;
+     // ⛔ DO NOT auto-restart mic here
+  });
 
     this.telemetry.emit('TTS_START', {
       message: 'VoiceSession bound to TTS events'
     });
   }
-
+   
   // ------------------------------------------------------------
   // helpers
   // ------------------------------------------------------------
@@ -395,5 +408,30 @@ export class VoiceSessionService implements OnDestroy {
     document.removeEventListener('tts-started', this.onTtsStartedBound);
     document.removeEventListener('tts-ended', this.onTtsEndedBound);
     this.stop();
+  }
+
+  // ✅ DEMO: Inject a "final STT" without using the microphone.
+  // Does NOT start/stop mic. Does NOT break mic ownership.
+  // Routes exactly like real STT final would.
+  injectFinal(text: string): void {
+    const activeIdNow = this.activeContextId;
+    if (!activeIdNow) return;
+
+    const ctx = this.contexts.get(activeIdNow);
+    if (!ctx) return;
+
+    this.zone.run(() => {
+      // keep your legacy orders forwarding behavior intact
+      if (activeIdNow === 'orders') {
+        this.voice.emitRecognizedText(text);
+      }
+
+      this.telemetry.emit('DEMO_INJECT_FINAL', {
+        ctx: activeIdNow,
+        payload: { text }
+      });
+
+      ctx.onFinal(text);
+    });
   }
 }

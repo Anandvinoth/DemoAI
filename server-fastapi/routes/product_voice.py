@@ -31,6 +31,27 @@ def flatten_filters(filters: Dict[str, Any]) -> Dict[str, str]:
             flat[k] = v
     return flat
 
+def normalize_price_filter(val: str) -> str | None:
+    v = val.lower()
+
+    if re.search(r"(less than|under|below)\s+(\d+)", v):
+        num = re.findall(r"\d+", v)[0]
+        return f"[0 TO {num}]"
+
+    if re.search(r"(greater than|above|over)\s+(\d+)", v):
+        num = re.findall(r"\d+", v)[0]
+        return f"[{num} TO 999999]"
+
+    if "between" in v:
+        nums = re.findall(r"\d+", v)
+        if len(nums) == 2:
+            return f"[{nums[0]} TO {nums[1]}]"
+
+    # already structured
+    if re.match(r"\[\d+\s+TO\s+\d+\]", v.upper()):
+        return v.upper()
+
+    return None
 
 @router.post("/query")
 async def products_query(payload: dict):
@@ -60,11 +81,35 @@ async def products_query(payload: dict):
 
         # 2 Explicit frontend filters from Angular / Swagger
         if filters_from_frontend:
-            print(f"[DEBUG] Using explicit frontend filters → {filters_from_frontend}")
+            print(f"[DEBUG - {__name__}] Using explicit frontend filters → {filters_from_frontend}")
 
-            # 🔥 NEW: normalize + multi-facet split + BOSCH→Bosch, etc.
-            clean_filters = normalize_filters_from_frontend(filters_from_frontend)
-            print(f"[DEBUG] Normalized frontend filters → {clean_filters}")
+            clean_filters: Dict[str, Any] = {}
+
+            for key, val in filters_from_frontend.items():
+                if isinstance(val, list) and val:
+                    val = val[0]
+
+                # 🔥 CRITICAL FIX: price must stay structured
+                if key == "price":
+                    price_range = normalize_price_filter(val)
+                    if price_range:
+                        clean_filters["price"] = price_range
+                    continue
+
+                # normal facets go through existing normalizer
+                clean_filters[key] = val
+
+            # 🔒 Preserve price before normalization
+            price_filter = clean_filters.pop("price", None)
+
+            # normalize non-price facets only
+            clean_filters = normalize_filters_from_frontend(clean_filters)
+
+            # restore price safely
+            if price_filter:
+                clean_filters["price"] = price_filter
+
+            print(f"[DEBUG - {__name__}] Normalized frontend filters → {clean_filters}")
 
             solr_query = text if text.strip() else "*:*"
 

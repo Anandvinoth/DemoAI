@@ -63,10 +63,10 @@ export function createProductsVoiceContext(deps: {
       });
 
       // ✅ Products OWN continuous mic
-      deps.voiceSession.start({
-        language: 'en-US',
-        continuous: true
-      });
+      // deps.voiceSession.start({
+      //   language: 'en-US',
+      //   continuous: true
+      // });
     },
 
     /* ---------- FINAL SPEECH ---------- */

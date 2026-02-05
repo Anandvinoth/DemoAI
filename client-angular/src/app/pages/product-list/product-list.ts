@@ -200,49 +200,56 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   // =====================================================================
-  //  SECTION C — TTS LOGIC (clean + readable)
-  // =====================================================================
-  private async handleTTS(count: number) {
+//  SECTION C — TTS LOGIC (clean + readable, demo-safe)
+// =====================================================================
+private async handleTTS(count: number) {
   const products = this.products();
 
-  // Nothing found
+  let message = '';
+
+  // 🟡 1) Nothing found
   if (count === 0) {
-    await this.tts.speakWhenIdle("I couldn't find any matching products.");
+    await this.tts.speakWhenIdle(
+      "I couldn't find any matching products."
+    );
+
+    document.dispatchEvent(
+      new CustomEvent('products-response-complete')
+    );
     this.voice.unmuteToApi();
     return;
   }
 
-  // Build dynamic list like: "1. Drill, 2. Saw, 3. Press"
+  // 🟡 2) Build readable list (max 3)
   const maxToRead = Math.min(count, 3);
   const names = products
     .slice(0, maxToRead)
     .map((p, i) => `${i + 1}. ${p.name}`)
-    .join(", ");
+    .join(', ');
 
-  // Dynamic choice options (first → up to third)
-  //const ordinalWords = ["first", "second", "third"];
-  //const choiceText = ordinalWords.slice(0, maxToRead).join(", ").replace(/,([^,]*)$/, " or$1");
-
-  // Single message builder (handles ALL cases)
-  let message = "";
-
+  // 🟡 3) Message builder
   if (count === 1) {
-    // One product → natural conversation
     message = `I found one product: ${products[0].name} by ${products[0].brand}.`;
-  } else if (count <= 3) {
-    // 2 or 3 products → read all, then prompt
-    console.log("######## found <=3 products #########");
-    message = `I found ${count} products in total.'; ${names}.`;
-    //message = `I found ${count} products in total.'; ${names}. Say ${choiceText} to choose.`;
-  } else {
-    // More than 3 → top 3
-    //message = `I found ${count} results Top ${maxToRead}: ${names}. Say ${choiceText} to choose.`;
+  }
+  else if (count <= 3) {
+    console.log('######## found <=3 products #########');
+    message = `I found ${count} products in total. ${names}.`;
+  }
+  else {
     message = `I found ${count} products in total.`;
   }
 
+  // 🟢 4) Speak and WAIT until fully finished
   await this.tts.speakWhenIdle(message);
+
+  // 🟢 5) Explicitly notify demo driver that response is DONE
+  document.dispatchEvent(
+    new CustomEvent('products-response-complete')
+  );
+
   this.voice.unmuteToApi();
 }
+
 
 
   // =====================================================================

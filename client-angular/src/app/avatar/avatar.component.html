@@ -1,0 +1,33 @@
+<!-- src/app/avatar/avatar.component.html -->
+<div
+  class="avatar"
+  [ngClass]="state$ | async"
+  (click)="onAvatarClick()">
+
+  <div class="avatar-head">
+    <div class="eyes">
+      <span class="eye left"></span>
+      <span class="eye right"></span>
+    </div>
+    <div class="mouth"></div>
+  </div>
+
+  <div class="avatar-status">
+    <ng-container [ngSwitch]="state$ | async">
+      <span *ngSwitchCase="'speaking'">Speaking…</span>
+      <span *ngSwitchCase="'listening'">Listening…</span>
+      <span *ngSwitchDefault></span>
+    </ng-container>
+  </div>
+
+  <div
+    class="avatar-container"
+    [class.listening]="(state$ | async) === 'listening'"
+    [class.speaking]="(state$ | async) === 'speaking'">
+
+    <ng-lottie [options]="drivingOptions"></ng-lottie>
+
+  </div>
+</div>
+
+

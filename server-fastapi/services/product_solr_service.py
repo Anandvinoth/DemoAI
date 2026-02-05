@@ -1,5 +1,6 @@
 # services/product_solr_service.py
 import httpx
+from attribute_loader import load_facet_values
 from typing import Dict, Any, Optional, List
 import re
 
@@ -9,6 +10,47 @@ VERIFY_SSL = False
 
 # Facet fields for products
 PRODUCT_FACETS = ["brand", "material", "color", "category"]
+FACET_CACHE = load_facet_values() or {}
+
+
+def normalize_facet_value(field: str, value: str, facet_cache: dict) -> str:
+    """
+    Normalize UI / voice values like:
+      PowerTools → Power Tools
+      powertools → Power Tools
+    using Solr facet cache as source of truth
+    """
+    if not value or field not in facet_cache:
+        return value
+
+    v_norm = value.lower().replace(" ", "")
+
+    for candidate in facet_cache.get(field, []):
+        if candidate.lower().replace(" ", "") == v_norm:
+            return candidate  # canonical Solr value
+
+    return value
+
+def normalize_price(val: str) -> Optional[str]:
+    v = str(val).lower()
+
+    if re.search(r"(less than|under)\s+(\d+)", v):
+        num = re.findall(r"\d+", v)[0]
+        return f"[0 TO {num}]"
+
+    if re.search(r"(greater than|above)\s+(\d+)", v):
+        num = re.findall(r"\d+", v)[0]
+        return f"[{num} TO 999999]"
+
+    if "between" in v:
+        nums = re.findall(r"\d+", v)
+        if len(nums) == 2:
+            return f"[{nums[0]} TO {nums[1]}]"
+
+    if re.match(r"\[\d+\s+TO\s+\d+\]", v.upper()):
+        return v.upper()
+
+    return None
 
 
 async def search_products_fuzzy(
@@ -59,15 +101,35 @@ async def search_products_fuzzy(
             continue
 
         # 🔥 fuzzy matching using search_text copyField
-        if key in fuzzy_fields:
-            term = str(val).strip()
-            fqs.append(f'search_text:"{term}"')
-            print(f"[PRODUCT-FUZZY] fq=search_text:\"{term}\"")
+        # if key in fuzzy_fields:
+        #     term = str(val).strip()
+        #     fqs.append(f'search_text:"{term}"')
+        #     # print(f"[PRODUCT-FUZZY] fq=search_text:\"{term}\"")
+        #     print(f"***** [{__name__}] fq=search_text:\"{term}\"")
+        #
+        #     continue
+
+        if key in PRODUCT_FACETS:
+            # canonical = normalize_facet_value(key, val, FACET_CACHE)
+            # fqs.append(f'{key}:"{canonical}"')
+            vals = val if isinstance(val, list) else [val]
+            canonicals = [
+                normalize_facet_value(key, v, FACET_CACHE)
+                for v in vals if v
+            ]
+
+            if canonicals:
+                fq = " OR ".join(f'{key}:"{c}"' for c in canonicals)
+                fqs.append(f"({fq})")
+            print(f"[PRODUCT-FACET] fq=({fq})")
             continue
 
         # Price filter remains structured
         if key == "price":
-            fqs.append(f"price:{val}")
+            # fqs.append(f"price:{val}")
+            rng = normalize_price(val)
+            if rng:
+                fqs.append(f"price:{rng}")
             continue
 
         # Fallback literal filter
@@ -89,8 +151,10 @@ async def search_products_fuzzy(
     for r in price_ranges:
         params.setdefault("facet.query", []).append(f"price:{r}")
 
-    print("[SOLR-FUZZY] URL:", url)
-    print("[SOLR-FUZZY] Params:", params)
+    # print("[SOLR-FUZZY] URL:", url)
+    # print("[SOLR-FUZZY] Params:", params)
+    print(f"[{__name__.upper().replace('_', '-')}] URL:", url)
+    print(f"[{__name__.upper().replace('_', '-')}] Params:", params)
 
     async with httpx.AsyncClient(verify=VERIFY_SSL) as client:
         resp = await client.get(url, params=params, auth=SOLR_AUTH)

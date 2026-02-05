@@ -15,19 +15,21 @@ export class VoiceRouteBinderService {
   private applyRoute(): void {
     const url = this.router.url;
 
-//    if (url.includes('/crm/opportunities/create')) {
-//      this.session.setActive('opportunity-create');
-//      return;
-//    }
+    // 🔒 ASSISTANT OWNS THE SYSTEM
+    if (url === '/assistant') {
+      return; // DO NOTHING
+    }
+
     if (url.includes('/orders')) {
       this.session.setActive('orders');
       return;
     }
+
     if (url.includes('/store/c')) {
       this.session.setActive('products');
       return;
     }
-    // default (no voice context)
-    this.session.setActive(undefined);
+
+    // no default auto-clear
   }
 }

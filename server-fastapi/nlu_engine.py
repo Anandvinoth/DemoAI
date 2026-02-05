@@ -253,7 +253,8 @@ class NLU:
         # 4) Fallback search text (only if nothing else captured)
         if not entities:
             entities["search_text"] = lowered
-        print("[ENTITIES RAW]", entities)
+        # print("[ENTITIES RAW - file nlu_engine.py]", entities)
+        print(f"[ENTITIES RAW - {self.__class__.__name__}]", entities)
         return entities
 
     # --------------------------------------------------------

@@ -21,7 +21,12 @@
 
   <nav>
     <a (click)="navigate('/store/c')">Products</a>
-    <a (click)="navigate('/orders')">Orders Logistics & Delivery</a> 
+    <div class="menu-group">
+        <a (click)="navigate('/orders')">Orders ▾</a> 
+        <div class="submenu">
+          <a (click)="navigate('')">📄 Logistics & Delivery</a>
+        </div>
+      </div>
     <a (click)="navigate('/invoices')">Invoices</a>
     <a (click)="navigate('/claims')">Claims</a>
     <a (click)="navigate('/reserve')">Reserve</a>
@@ -38,7 +43,7 @@
   </nav>
 
   <div class="user-info">
-    <span>Logged in as <strong>John Doe</strong></span>
+    <span>Logged in as <strong>Anand Elangovan</strong></span>
     <button class="logout" (click)="navigate('/logout')">Logout</button>
   </div>
 </header>

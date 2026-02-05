@@ -29,7 +29,13 @@ export type VoiceEventType =
   // business / workflow telemetry
   | 'FORM_DEFAULTS'
   | 'FORM_SUBMIT'
-  | 'FLOW_START';
+  | 'FLOW_START'
+  | 'DEMO_INJECT_FINAL'
+  | 'DEMO_START'
+  | 'DEMO_PAUSE'
+  | 'DEMO_STOP'
+  | 'DEMO_STEP'
+  | 'DEMO_COMPLETE';
 
 
 export interface VoiceTelemetryEvent {

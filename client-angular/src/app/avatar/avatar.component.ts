@@ -20,10 +20,11 @@ type AvatarState = 'idle' | 'speaking' | 'listening';
 })
 export class AvatarComponent {
 
-  private started = false;
+  // private started = false;
 
   readonly state$: Observable<AvatarState>;
   @Output() startDemo = new EventEmitter<void>();
+
   readonly drivingOptions: AnimationOptions = {
     path: 'assets/avatar/driving.json',
     loop: true,
@@ -52,15 +53,16 @@ export class AvatarComponent {
     // this.startDemo.emit();
   // }
   async onAvatarClick() {
-    if (this.started) return;
-    this.started = true;
+    // if (this.started) return;
+    // this.started = true;
 
     console.log('🧑‍✈️ Avatar clicked — starting demo');
 
     // MUST be inside user gesture
     this.tts.unlock();
 
-    await this.demo.start();
+    // await this.demo.start();
+    await this.demo.handleAvatarClick();
   }
 }
 

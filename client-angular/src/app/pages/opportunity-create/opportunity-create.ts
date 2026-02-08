@@ -10,7 +10,7 @@ import { VoiceSessionService } from '../../services/voice/voice-session.service'
 import { VoiceTelemetryService } from '../../services/voice/voice-telemetry.service';
 import { createOpportunityCreateVoiceContext } from '../../services/voice/contexts/opportunity-create.voice.context';
 import { OpportunityService } from '../../services/opportunity.service';
-
+import { Router } from '@angular/router';
 import { OpportunityVoiceService } from './opportunity-voice.service';
 
 interface OpportunityMetadata {
@@ -51,7 +51,8 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
     private voiceCtx: VoiceContextService,
     private voiceSession: VoiceSessionService,
     private telemetry: VoiceTelemetryService,
-    private opportunityService: OpportunityService
+    private opportunityService: OpportunityService,
+    private router: Router
   ) {
     const today = new Date().toISOString().slice(0, 10);
 
@@ -68,11 +69,11 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
       currency: ['USD'],
       probability: [10],
       expected_revenue: [0],
-      expected_close_date: [today],
-      close_date: [today],
+      expected_close_date: [''],
+      close_date: [''],
       last_activity_date: [today],
       last_contacted_date: [today],
-      next_activity_date: [today],
+      next_activity_date: [''],
       forecast_category: ['Pipeline'],
       lead_source: ['Voice'],
       priority: ['Medium'],
@@ -95,14 +96,26 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // ✅ DO NOT register voice context on page load
     // Wait for DemoDriveService to signal start
-    document.addEventListener('opportunity-demo-start', this.startHandler);
+    //document.addEventListener('opportunity-demo-start', this.startHandler);
+     this.startVoiceOwnership();
+     document.addEventListener(
+        'opportunity-created-success',
+        this.handleOpportunityCreated
+     );
 
     // Optional UI signal
     console.log('🧾 Opportunity page loaded — waiting for avatar click to start voice');
   }
 
+  private handleOpportunityCreated = async () => {
+    console.log('📄 Routing to opportunity list');
+    await this.router.navigate(['/crm/opportunities/list']);
+  };
+
+
   ngOnDestroy(): void {
     document.removeEventListener('opportunity-demo-start', this.startHandler);
+    document.removeEventListener('opportunity-created-success',this.handleOpportunityCreated);
 
     if (this.voiceStarted) {
       this.voiceSession.unregister('opportunity-create');
@@ -110,23 +123,35 @@ export class OpportunityCreateComponent implements OnInit, OnDestroy {
     }
   }
 
-  private startVoiceOwnership(): void {
-    if (this.voiceStarted) return;
-    this.voiceStarted = true;
+  private async startVoiceOwnership(): Promise<void> {
+  if (this.voiceStarted) return;
+  this.voiceStarted = true;
 
-    const ctx = createOpportunityCreateVoiceContext({
-      telemetry: this.telemetry,
-      tts: this.tts,
-      form: this.form,
-      voiceSession: this.voiceSession,
-      opportunityService: this.opportunityService
-    });
+  const ctx = createOpportunityCreateVoiceContext({
+    telemetry: this.telemetry,
+    tts: this.tts,
+    form: this.form,
+    voiceSession: this.voiceSession,
+    opportunityService: this.opportunityService
+  });
 
-    this.voiceSession.register(ctx);
-    this.voiceSession.setActive('opportunity-create');
+  this.voiceSession.register(ctx);
+  this.voiceSession.setActive('opportunity-create');
 
-    console.log('🎛️ Opportunity voice ownership started');
-  }
+  console.log('🎛️ Opportunity voice ownership started');
+
+  // 🔑 ADD THIS: initial driver prompt
+//  await this.tts.speakWithVoice(
+//   `What is the opportunity name?`,
+//   'Google UK English Female',
+//   { rate: 0.9, pitch: 1.1 }
+// );
+
+  // OPTIONAL: if your context expects listening after prompt
+  // ctx.wantsListening = true;
+  // this.voiceSession.requestListening({ language: 'en-US', continuous: false });
+}
+
 
   metadata(): OpportunityMetadata | null {
     return null;

@@ -22,6 +22,18 @@ export class DemoDriveService {
     'Get me all the products'
   ];
 
+  private opportunitySteps = [
+    { ask: 'What is the opportunity name?', answer: 'Marriott redesign' },
+    { ask: 'What is the account id?', answer: 'ACC1014' },
+    { ask: 'Who is the primary contact?', answer: 'Cody Stidham' },
+    { ask: 'Who is the owner?', answer: 'Chris Post' },
+    { ask: 'What is the expected amount?', answer: '500000' },
+    { ask: 'What is the expected close date?', answer: 'March 31st 2026' }
+  ];
+
+    private opportunityIndex = 0;
+
+
   private index = 0;
   private running = false;
 
@@ -139,10 +151,21 @@ export class DemoDriveService {
 
     // Driver speaks transition line
     await this.tts.speakWithVoice(
-      `Let’s create an opportunity.`,
-      'Google UK English Male',
+     // `Let’s create an opportunity.`,
+     'Do you want to create an opportunity?',
+      'Google UK English Female',
       { rate: 0.92, pitch: 1.2 }
     );
+
+    await this.waitUntilTtsIdle();
+    // DEMO: assistant answers itself (audible)
+    await this.tts.speakWithVoice(
+      'Yes',
+      'Google UK English Male',
+      { rate: 0.92, pitch: 1.1 }
+    );
+
+    await this.waitUntilTtsIdle();
 
     // HARD STOP product ownership (no leakage)
     this.voiceSession.setActive(undefined);
@@ -151,10 +174,12 @@ export class DemoDriveService {
     await this.router.navigateByUrl('/crm/opportunities/create');
 
     // Now WAIT for user click, do NOT start voice automatically
-    this.phase = 'WAITING_OPPORTUNITY_CLICK';
+    // this.phase = 'WAITING_OPPORTUNITY_CLICK';
 
-    // Optional: let page know we’re in demo-wait mode (if you want UI text)
-    document.dispatchEvent(new CustomEvent('opportunity-demo-waiting'));
+    // Start opportunity flow immediately
+    // document.dispatchEvent(new CustomEvent('opportunity-demo-start'));
+    await new Promise(res => setTimeout(res, 0));
+    await this.startOpportunityDemo();
   }
 
   // ----------------------------
@@ -174,5 +199,50 @@ export class DemoDriveService {
 
     // If you want DemoDriveService to ALSO drive scripted opportunity steps later,
     // we can add that as a separate service without touching product.
+  }
+
+  //OPPORTUNITY DEMO
+    private async startOpportunityDemo(): Promise<void> {
+    this.opportunityIndex = 0;
+    await this.runNextOpportunityStep();
+  }
+
+  private async runNextOpportunityStep(): Promise<void> {
+    if (this.opportunityIndex >= this.opportunitySteps.length) {
+      // await this.tts.speakWithVoice(
+      //   'The opportunity has been created successfully.',
+      //   'Google UK English Female',
+      //   { rate: 0.9, pitch: 1.1 }
+      // );
+      this.phase = 'DONE';
+      return;
+    }
+
+    const step = this.opportunitySteps[this.opportunityIndex++];
+
+    // 🗣️ SYSTEM ASKS (Female)
+    await this.tts.speakWithVoice(
+      step.ask,
+      'Google UK English Female',
+      { rate: 0.9, pitch: 1.1 }
+    );
+
+    await this.waitUntilTtsIdle();
+
+    // 🧑‍✈️ DRIVER ANSWERS (Male, audible)
+    await this.tts.speakWithVoice(
+      step.answer,
+      'Google UK English Male',
+      { rate: 0.95, pitch: 1.0 }
+    );
+
+    await this.waitUntilTtsIdle();
+
+    // 🧠 Deliver answer to opportunity context
+    this.voiceSession.injectFinal(step.answer);
+
+    await this.sleep(800);
+
+    await this.runNextOpportunityStep();
   }
 }

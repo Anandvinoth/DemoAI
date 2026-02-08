@@ -35,6 +35,7 @@ export type VoiceEventType =
   | 'DEMO_PAUSE'
   | 'DEMO_STOP'
   | 'DEMO_STEP'
+  | 'CONFIRM_IGNORED_EARLY'
   | 'DEMO_COMPLETE';
 
 

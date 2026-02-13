@@ -1,4 +1,4 @@
-#import pymysql
+# import pymysql
 import mysql.connector
 
 def get_connection():
@@ -7,6 +7,6 @@ def get_connection():
         user="sa",
         password="nimda",
         database="openvoice360"
-        #cursorclass=pymysql.cursors.DictCursor,
-        #autocommit=True
+        # cursorclass=pymysql.cursors.DictCursor,
+        # autocommit=True
     )

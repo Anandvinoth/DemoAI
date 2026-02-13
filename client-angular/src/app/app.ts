@@ -19,10 +19,16 @@ import { VoiceContextService } from './services/voice/voice-context.service';
 import { TtsService } from './services/tts.service';
 import { DemoDriveService } from './services/voice/demo-drive.service';
 
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [Header, Footer, RouterOutlet, AvatarComponent],
+  imports: [Header, Footer, RouterOutlet,CommonModule, AvatarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -42,6 +48,8 @@ export class AppComponent implements OnInit {
     private demoDrive: DemoDriveService,
     private tts: TtsService
   ) {}
+
+  showAvatar = signal(true);
 
   ngOnInit(): void {
 
@@ -76,6 +84,37 @@ export class AppComponent implements OnInit {
 
     // 4️⃣ HARD STOP mic — demo is deterministic
     this.voiceSession.stop();
+
+    const updateAvatarVisibility = (url: string) => {
+      // Hide ONLY on exact /orders route (and child routes)
+      console.log('Current Route:', url);
+      this.showAvatar.set(!url.startsWith('/orders'));
+    };
+
+    // ✅ Evaluate immediately (important)
+    updateAvatarVisibility(this.router.url);
+
+    // ✅ Listen to route changes
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        updateAvatarVisibility(event.urlAfterRedirects);
+      });
+
+
+    // this.router.events
+    // .pipe(filter(event => event instanceof NavigationEnd))
+    // .subscribe((event: any) => {
+    //   const url = event.urlAfterRedirects;
+
+    //   // Hide avatar on Orders page
+    //   if (url.startsWith('/orders')) {
+    //     this.showAvatar.set(false);
+    //   } else {
+    //     this.showAvatar.set(true);
+    //   }
+    // });
+
 
     // 5️⃣ START DEMO ONLY AFTER FIRST USER INTERACTION
     // const startDemoOnce = () => {

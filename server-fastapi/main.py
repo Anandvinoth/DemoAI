@@ -27,6 +27,9 @@ from routes.product_detail import router as product_detail_router
 from routes.opportunity_routes import router as opp_router
 from routes.opportunity_metadata import router as opportunity_metadata_router
 from routes.opportunity_autocomplete import router as opp_auto_router
+from routes.opportunity_analytics import router as opp_analytics_router
+from routes.opportunity_analytics_read import router as opportunity_analytics_read_router
+
 
 
 # Simple in-memory retry state (per client IP)
@@ -59,6 +62,9 @@ app.include_router(product_detail_router, prefix="/api")
 app.include_router(opp_router, prefix="/api")
 app.include_router(opportunity_metadata_router, prefix="/api")
 app.include_router(opp_auto_router)
+app.include_router(opportunity_analytics_read_router)
+
+app.include_router(opp_analytics_router)
 
 class QueryRequest(BaseModel):
     query: str

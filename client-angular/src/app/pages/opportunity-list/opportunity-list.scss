@@ -1,20 +1,184 @@
+.dashboard-wrapper {
+  max-width: 1400px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 30px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: #666;
+    margin-top: 6px;
+  }
+}
+
+/* KPI GRID */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.kpi-card {
+  padding: 30px;
+  border-radius: 14px;
+  color: white;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .kpi-title {
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  .kpi-value {
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+}
+
+.pipeline {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.risk {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+.closing {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+
+/* TABLE */
+.table-container {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  overflow-x: auto;
+}
+
 .opplist {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+}
+
+.opplist thead {
+  background: #f4f6f9;
+}
+
+.opplist th {
+  text-align: left;
+  padding: 14px;
+  font-weight: 600;
   font-size: 14px;
+}
 
-  th, td {
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-  }
+.opplist td {
+  padding: 12px 14px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+}
 
-  th {
-    background: #f3f3f3;
-    text-align: left;
-  }
+.opplist tbody tr:hover {
+  background: #f9fafb;
+}
 
-  tr:hover {
-    background: #fafafa;
-  }
+.name-cell {
+  font-weight: 600;
+}
+
+.amount {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Risk Pill */
+.risk-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Risk Dot Base */
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* 🔴 RED – Blinking Alert */
+.risk-red .dot {
+  background: #ef4444;
+  animation: blink-red 1.2s infinite;
+}
+
+/* 🟡 YELLOW – Soft Pulse */
+.risk-yellow .dot {
+  background: #f59e0b;
+  animation: pulse-yellow 2s infinite;
+}
+
+/* 🟢 GREEN – Calm Glow */
+.risk-green .dot {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+/* Idle warning */
+.idle-high {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+@keyframes blink-red {
+  0%   { opacity: 1; box-shadow: 0 0 4px #ef4444; }
+  50%  { opacity: 0.3; box-shadow: 0 0 14px #ef4444; }
+  100% { opacity: 1; box-shadow: 0 0 4px #ef4444; }
+}
+
+@keyframes pulse-yellow {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* 🔴 Risk Alert Card */
+.risk-alert {
+  border: 2px solid #ef4444;
+  animation: card-glow 1.5s infinite;
+}
+
+/* 🔴 Blinking Number */
+.blink-number {
+  animation: number-blink 1.2s infinite;
+}
+
+/* Card Glow Animation */
+@keyframes card-glow {
+  0%   { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+  50%  { box-shadow: 0 0 18px rgba(239, 68, 68, 0.9); }
+  100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+}
+
+/* Number Pulse */
+@keyframes number-blink {
+  0%   { transform: scale(1); opacity: 1; }
+  50%  { transform: scale(1.2); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
 }

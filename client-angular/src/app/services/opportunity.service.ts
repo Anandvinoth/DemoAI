@@ -29,4 +29,12 @@ export class OpportunityService {
   listOpportunities() {
     return this.http.get<any>('http://localhost:8000/api/api/opportunities/list');
   }
+
+  analyticsOpportunities(payload: any) {
+  return this.http.post(
+    `${this.base}/api/analytics/opportunities`,
+    payload
+  );
+}
+
 }

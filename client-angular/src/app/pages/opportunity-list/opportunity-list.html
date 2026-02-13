@@ -1,34 +1,90 @@
-<h2>All Opportunities ({{ count() }})</h2>
+<div class="dashboard-wrapper">
 
-<div *ngIf="loading()">Loading...</div>
-<div *ngIf="error()" class="error">{{ error() }}</div>
+  <div class="dashboard-header">
+    <h1>Opportunity Intelligence Dashboard</h1>
+    <div class="subtitle">
+      All Opportunities ({{ count() }})
+    </div>
+  </div>
 
-<table class="opplist" *ngIf="rows().length && !loading()">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Account</th>
-      <th>Contact</th>
-      <th>Owner</th>
-      <th>Stage</th>
-      <th>Status</th>
-      <th>Amount</th>
-      <th>Created</th>
-    </tr>
-  </thead>
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
 
-  <tbody>
-    <tr *ngFor="let row of rows()">
-      <td>{{ row.opportunity_id }}</td>
-      <td>{{ row.opportunity_name }}</td>
-      <td>{{ row.account_id }}</td>
-      <td>{{ row.primary_contact_id }}</td>
-      <td>{{ row.owner_id }}</td>
-      <td>{{ row.stage }}</td>
-      <td>{{ row.status }}</td>
-      <td>{{ row.amount }} {{ row.currency }}</td>
-      <td>{{ row.created_at | date:'yyyy-MM-dd' }}</td>
-    </tr>
-  </tbody>
-</table>
+    <div class="kpi-card pipeline">
+      <div class="kpi-title">Total Pipeline</div>
+      <div class="kpi-value">
+        ${{ totalPipeline() | number }}
+      </div>
+    </div>
+
+  <div class="kpi-card risk"
+    [ngClass]="{ 'risk-alert': atRiskCount() > 0 }">
+    <div class="kpi-title">At Risk</div>
+    <div class="kpi-value"
+        [ngClass]="{ 'blink-number': atRiskCount() > 0 }">
+      {{ atRiskCount() }}
+    </div>
+  </div>
+
+    <div class="kpi-card closing">
+      <div class="kpi-title">Closing This Month</div>
+      <div class="kpi-value">
+        {{ closingThisMonth() }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-container">
+    <table class="opplist" *ngIf="rows().length && !loading()">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Account</th>
+          <th>Owner</th>
+          <th>Stage</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Risk</th>
+          <th>Next Activity</th>
+          <th>Idle (Days)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of rows()">
+          <td>{{ row.opportunity_id }}</td>
+          <td class="name-cell">{{ row.opportunity_name }}</td>
+          <td>{{ row.account_id }}</td>
+          <td>{{ row.owner_id }}</td>
+          <td>{{ row.stage }}</td>
+          <td>{{ row.status }}</td>
+          <td class="amount">
+            ${{ row.amount | number }}
+          </td>
+
+          <td>
+            <span class="risk-pill"
+              [ngClass]="{
+                'risk-red': row.risk_flag === 'RED',
+                'risk-yellow': row.risk_flag === 'YELLOW',
+                'risk-green': row.risk_flag === 'GREEN'
+              }">
+              <span class="dot"></span>
+            </span>
+          </td>
+
+          <td>{{ row.next_activity_date | date:'yyyy-MM-dd' }}</td>
+          <td>
+            <span [class.idle-high]="row.days_since_last_activity > 30">
+              {{ row.days_since_last_activity }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

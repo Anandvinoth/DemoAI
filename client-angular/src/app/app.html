@@ -5,7 +5,8 @@
 <router-outlet></router-outlet>
 
 <!-- Avatar (global, floating, read-only) -->
-<app-avatar></app-avatar>
+<!--app-avatar></app-avatar-->
+<app-avatar *ngIf="showAvatar()"></app-avatar>
 
 <!-- Footer -->
 <app-footer></app-footer>

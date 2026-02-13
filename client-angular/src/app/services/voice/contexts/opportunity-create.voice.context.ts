@@ -210,6 +210,7 @@ export function createOpportunityCreateVoiceContext(deps: {
 
         step = 'done';
         deps.voiceSession.setActive(undefined);
+        
         const avatar = document.getElementById('assistant-avatar');
           if (avatar) {
             avatar.style.display = 'none';

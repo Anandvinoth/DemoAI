@@ -19,6 +19,18 @@ export class DemoDriveService {
   // PRODUCT DEMO (UNCHANGED list)
   // ----------------------------
   private steps = [
+    'Get me all the products',
+    'show products under 50',
+    'Brand 3M',
+    'price less than 25',
+    'price above 300',
+    'price between 100 and 250',
+    'Category Furniture',
+    'Material Steel',
+    'Color Red',
+    'Category PowerTools',
+    'Brand Kito',
+    'Material Steel and Color Gray',
     'Get me all the products'
   ];
 
